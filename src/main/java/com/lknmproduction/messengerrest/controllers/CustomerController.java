@@ -2,9 +2,8 @@ package com.lknmproduction.messengerrest.controllers;
 
 import com.lknmproduction.messengerrest.domain.Customer;
 import com.lknmproduction.messengerrest.service.CustomerService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -21,8 +20,18 @@ public class CustomerController {
     }
 
     @GetMapping
-    List<Customer> getAllCostumers() {
+    public List<Customer> getAllCostumers() {
         return customerService.findAllCustomers();
     }
 
+    @GetMapping("/{id}")
+    public Customer getCostumerById(@PathVariable Long id) {
+        return customerService.findCostumerById(id);
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public Customer saveCustomer(@RequestBody Customer customer) {
+        return customerService.saveCostumer(customer);
+    }
 }
