@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@PropertySource(ignoreResourceNotFound = true, value = "classpath:application.properties")
+@PropertySource(ignoreResourceNotFound = true, value = "classpath:twillioCredentials/env.properties")
 @RestController
 @RequestMapping(UserController.BASE_URL)
 public class UserController {
@@ -20,9 +20,9 @@ public class UserController {
     private final UserService userService;
     @Value("${twilioAccountSid}")
     private String twilioAccountSid;
-    @Value("${twilioApiKey")
+    @Value("${twilioApiKey}")
     private String twilioApiKey;
-    @Value("${twilioApiSecret")
+    @Value("${twilioApiSecret}")
     private String twilioApiSecret;
     @Value("${serviceSid}")
     private String serviceSid;
