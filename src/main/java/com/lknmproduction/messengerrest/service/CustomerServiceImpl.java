@@ -29,4 +29,9 @@ public class CustomerServiceImpl implements CustomerService {
     public Customer saveCostumer(Customer customer) {
         return customerRepository.save(customer);
     }
+
+    @Override
+    public Customer findByLastname(String lastname) {
+        return customerRepository.getFirstByLastnameEquals(lastname);
+    }
 }

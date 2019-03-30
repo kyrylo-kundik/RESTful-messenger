@@ -11,4 +11,7 @@ public interface CustomerService {
     List<Customer> findAllCustomers();
 
     Customer saveCostumer(Customer customer);
+
+    Customer findByLastname(String lastname);
+
 }

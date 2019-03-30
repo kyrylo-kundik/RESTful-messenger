@@ -1,12 +1,13 @@
 package com.lknmproduction.messengerrest.controllers;
 
 import com.lknmproduction.messengerrest.domain.User;
+import com.lknmproduction.messengerrest.service.TwilioCredentialService;
 import com.lknmproduction.messengerrest.service.UserService;
 import com.twilio.jwt.accesstoken.AccessToken;
 import com.twilio.jwt.accesstoken.ChatGrant;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,18 +19,20 @@ public class UserController {
 
     public static final String BASE_URL = "/api/v1/user";
     private final UserService userService;
-    @Value("${twilioAccountSid}")
-    private String twilioAccountSid;
-    @Value("${twilioApiKey}")
-    private String twilioApiKey;
-    @Value("${twilioApiSecret}")
-    private String twilioApiSecret;
-    @Value("${serviceSid}")
-    private String serviceSid;
+    private final TwilioCredentialService twilioCredentialService;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, TwilioCredentialService twilioCredentialService, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userService = userService;
+        this.twilioCredentialService = twilioCredentialService;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
+
+//    @PostMapping("/signUp")
+//    public void signUp(@RequestBody User user) {
+//        user.setPassHash(bCryptPasswordEncoder.encode(user.getPassHash()));
+//        userService.saveUser(user);
+//    }
 
     @PutMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -61,9 +64,10 @@ public class UserController {
     public String getChatToken(@RequestHeader("Authorization") String jwtTokenUser) {
 
         ChatGrant grant = new ChatGrant();
-        grant.setServiceSid(serviceSid);
+        grant.setServiceSid(twilioCredentialService.getServiceSid());
 
-        AccessToken token = new AccessToken.Builder(twilioAccountSid, twilioApiKey, twilioApiSecret)
+        AccessToken token = new AccessToken.Builder(twilioCredentialService.getTwilioAccountSid(),
+                twilioCredentialService.getTwilioApiKey(), twilioCredentialService.getTwilioApiSecret())
                 .identity(jwtTokenUser).grant(grant).build();
 
         return token.toJwt();
