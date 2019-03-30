@@ -13,7 +13,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import static com.lknmproduction.messengerrest.security.SecurityConstants.LOGIN_URL;
 import static com.lknmproduction.messengerrest.security.SecurityConstants.SIGN_UP_URL;
 
 @EnableWebSecurity
