@@ -18,15 +18,10 @@ public class User {
     @Column(name = "last_name")
     private String lastName;
     private String username;
-    private String email;
     @Column(name = "phone_number")
     private String phoneNumber;
     @Column(name = "photo_url")
     private String photoUrl;
-    @Column(name = "pass_hash")
-    private String passHash;
-    @Column(name = "dynamic_salt")
-    private String dynamicSalt;
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "last_seen")
     private Date lastSeen;
