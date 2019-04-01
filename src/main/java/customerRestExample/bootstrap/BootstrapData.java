@@ -1,7 +1,6 @@
-package com.lknmproduction.messengerrest.bootstrap;
+package customerRestExample.bootstrap;
 
-import com.lknmproduction.messengerrest.domain.Customer;
-import com.lknmproduction.messengerrest.repositories.CustomerRepository;
+import customerRestExample.repositories.CustomerRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 

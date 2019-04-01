@@ -1,6 +1,6 @@
-package com.lknmproduction.messengerrest.service;
+package customerRestExample.service;
 
-import com.lknmproduction.messengerrest.domain.Customer;
+import customerRestExample.domain.Customer;
 
 import java.util.List;
 

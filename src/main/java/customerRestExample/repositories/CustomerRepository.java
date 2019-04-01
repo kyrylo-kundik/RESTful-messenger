@@ -1,6 +1,6 @@
-package com.lknmproduction.messengerrest.repositories;
+package customerRestExample.repositories;
 
-import com.lknmproduction.messengerrest.domain.Customer;
+import customerRestExample.domain.Customer;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
