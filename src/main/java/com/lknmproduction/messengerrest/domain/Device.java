@@ -1,19 +1,22 @@
 package com.lknmproduction.messengerrest.domain;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
 
 @Data
+@EqualsAndHashCode(exclude = "user")
 @Entity
 public class Device {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private String id;
     @Column(name = "push_id")
     private Long pushId;
     @Column(name = "is_active")
     private Boolean isActive;
+    @ManyToOne(fetch = FetchType.EAGER)
+    private User user;
 
 }
