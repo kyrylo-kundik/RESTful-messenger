@@ -1,7 +1,7 @@
-package com.lknmproduction.messengerrest.service;
+package customerRestExample.service;
 
-import com.lknmproduction.messengerrest.domain.Customer;
-import com.lknmproduction.messengerrest.repositories.CustomerRepository;
+import customerRestExample.domain.Customer;
+import customerRestExample.repositories.CustomerRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

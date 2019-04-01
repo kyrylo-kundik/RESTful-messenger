@@ -1,7 +1,7 @@
-package com.lknmproduction.messengerrest.controllers;
+package customerRestExample.controllers;
 
-import com.lknmproduction.messengerrest.domain.Customer;
-import com.lknmproduction.messengerrest.service.CustomerService;
+import customerRestExample.domain.Customer;
+import customerRestExample.service.CustomerService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;

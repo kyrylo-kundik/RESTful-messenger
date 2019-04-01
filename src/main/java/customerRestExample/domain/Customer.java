@@ -1,4 +1,4 @@
-package com.lknmproduction.messengerrest.domain;
+package customerRestExample.domain;
 
 import lombok.Data;
 

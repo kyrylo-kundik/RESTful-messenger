@@ -1,6 +1,6 @@
 package com.lknmproduction.messengerrest.security;
 
-import com.lknmproduction.messengerrest.service.CustomerDetailsServiceImpl;
+import customerRestExample.service.CustomerDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
