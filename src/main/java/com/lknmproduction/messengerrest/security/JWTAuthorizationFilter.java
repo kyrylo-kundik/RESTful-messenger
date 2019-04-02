@@ -47,7 +47,7 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
             DecodedJWT jwt = JWT.require(Algorithm.HMAC512(SECRET.getBytes()))
                     .build()
                     .verify(token.replace(TOKEN_PREFIX, ""));
-            if (!jwt.getClaim("is_active").as(Boolean.class))
+            if (!jwt.getClaim("isActive").as(Boolean.class))
                 return null;
             // parse the token.
             String user = JWT.require(Algorithm.HMAC512(SECRET.getBytes()))
