@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @PropertySource(ignoreResourceNotFound = true, value = "classpath:twillioCredentials/env.properties")
@@ -20,12 +21,10 @@ public class UserController {
     public static final String BASE_URL = "/api/v1/user";
     private final UserService userService;
     private final TwilioCredentialService twilioCredentialService;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public UserController(UserService userService, TwilioCredentialService twilioCredentialService, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public UserController(UserService userService, TwilioCredentialService twilioCredentialService) {
         this.userService = userService;
         this.twilioCredentialService = twilioCredentialService;
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
 //    @PostMapping("/signUp")
@@ -58,6 +57,13 @@ public class UserController {
     @GetMapping
     public List<User> getUsers() {
         return userService.findUsers();
+    }
+
+    @PostMapping("/createUser")
+    @ResponseBody
+    public User createUser(@RequestBody User user) {
+
+        return user;
     }
 
     @GetMapping("/chatToken")
