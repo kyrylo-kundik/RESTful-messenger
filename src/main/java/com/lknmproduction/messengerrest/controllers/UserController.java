@@ -1,14 +1,18 @@
 package com.lknmproduction.messengerrest.controllers;
 
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.lknmproduction.messengerrest.domain.Device;
 import com.lknmproduction.messengerrest.domain.User;
+import com.lknmproduction.messengerrest.service.utils.JwtTokenService;
 import com.lknmproduction.messengerrest.service.utils.TwilioCredentialService;
 import com.lknmproduction.messengerrest.service.UserService;
 import com.twilio.jwt.accesstoken.AccessToken;
 import com.twilio.jwt.accesstoken.ChatGrant;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -17,28 +21,13 @@ public class UserController {
 
     public static final String BASE_URL = "/api/v1/user";
     private final UserService userService;
+    private final JwtTokenService jwtTokenService;
     private final TwilioCredentialService twilioCredentialService;
 
-    public UserController(UserService userService, TwilioCredentialService twilioCredentialService) {
+    public UserController(UserService userService, JwtTokenService jwtTokenService, TwilioCredentialService twilioCredentialService) {
         this.userService = userService;
+        this.jwtTokenService = jwtTokenService;
         this.twilioCredentialService = twilioCredentialService;
-    }
-
-//    @PostMapping("/signUp")
-//    public void signUp(@RequestBody User user) {
-//        user.setPassHash(bCryptPasswordEncoder.encode(user.getPassHash()));
-//        userService.saveUser(user);
-//    }
-
-    @PutMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public User saveUser(@RequestBody User user) {
-        return userService.saveUser(user);
-    }
-
-    @PostMapping
-    public User updateUser(@RequestBody User user) {
-        return userService.updateUser(user);
     }
 
     @GetMapping("/{id}")
@@ -58,9 +47,27 @@ public class UserController {
 
     @PostMapping("/createUser")
     @ResponseBody
-    public User createUser(@RequestBody User user) {
+    public ResponseEntity<?> createUser(@RequestHeader("Authorization") String token, @RequestBody User user) {
+        DecodedJWT decodedJWT = jwtTokenService.decodeToken(token);
 
-        return user;
+        if (decodedJWT.getClaim("isActive").asBoolean() && decodedJWT.getClaim("isSignedup").asBoolean()) {
+            return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
+        }
+
+        if (!user.getPhoneNumber().equals(decodedJWT.getClaim("phoneNumber").asString()))
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+
+        Device device = new Device();
+        device.setIsActive(true);
+        device.setId(decodedJWT.getClaim("deviceId").asString());
+
+        List<Device> deviceList = new ArrayList<>();
+        deviceList.add(device);
+
+        user.setDeviceList(deviceList);
+        User createdUser = userService.saveUser(user);
+
+        return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
     }
 
     @GetMapping("/chatToken")

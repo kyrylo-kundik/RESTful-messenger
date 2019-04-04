@@ -5,6 +5,8 @@ import com.lknmproduction.messengerrest.repositories.DeviceRepository;
 import com.lknmproduction.messengerrest.service.DeviceService;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class DeviceServiceImpl implements DeviceService {
 
@@ -16,6 +18,9 @@ public class DeviceServiceImpl implements DeviceService {
 
     @Override
     public Device getDeviceById(String id) {
-        return deviceRepository.getOne(id);
+        Optional optional = deviceRepository.findById(id);
+        if (optional.isPresent())
+            return (Device) optional.get();
+        return null;
     }
 }
