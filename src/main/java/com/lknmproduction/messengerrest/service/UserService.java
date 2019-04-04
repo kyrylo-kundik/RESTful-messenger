@@ -17,7 +17,7 @@ public interface UserService {
 
     public User deleteUserById(Long id);
 
-    public List<Device> userDeviceIdsByPhoneNumber(String phoneNumber);
+    public List<Device> userDevicesByPhoneNumber(String phoneNumber);
 
     public User findUserByPhoneNumber(String phoneNumber);
 }

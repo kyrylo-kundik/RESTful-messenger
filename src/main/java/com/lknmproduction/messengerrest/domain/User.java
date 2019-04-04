@@ -28,9 +28,12 @@ public class User {
     @Column(name = "last_seen")
     private Date lastSeen;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "user", orphanRemoval = true, cascade = {
-            CascadeType.PERSIST, CascadeType.REMOVE})
-    @JoinColumn(name = "user_fk")
+    //    @OneToMany(fetch = FetchType.EAGER, mappedBy = "user", orphanRemoval = true, cascade = {
+//            CascadeType.PERSIST, CascadeType.REMOVE})
+//    @JoinColumn(name = "user_fk")
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, orphanRemoval = true, cascade = {
+            CascadeType.PERSIST, CascadeType.REMOVE
+    })
     private List<Device> deviceList;
 
 }
