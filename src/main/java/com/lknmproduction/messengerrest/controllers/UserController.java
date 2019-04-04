@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.lknmproduction.messengerrest.security.SecurityConstants.HEADER_STRING;
+
 @RestController
 @RequestMapping(UserController.BASE_URL)
 public class UserController {
@@ -47,7 +49,7 @@ public class UserController {
 
     @PostMapping("/createUser")
     @ResponseBody
-    public ResponseEntity<?> createUser(@RequestHeader("Authorization") String token, @RequestBody User user) {
+    public ResponseEntity<?> createUser(@RequestHeader(HEADER_STRING) String token, @RequestBody User user) {
         DecodedJWT decodedJWT = jwtTokenService.decodeToken(token);
 
         if (decodedJWT.getClaim("isActive").asBoolean() && decodedJWT.getClaim("isSignedup").asBoolean()) {
@@ -71,7 +73,7 @@ public class UserController {
     }
 
     @GetMapping("/chatToken")
-    public String getChatToken(@RequestHeader("Authorization") String jwtTokenUser) {
+    public String getChatToken(@RequestHeader(HEADER_STRING) String jwtTokenUser) {
 
         ChatGrant grant = new ChatGrant();
         grant.setServiceSid(twilioCredentialService.getServiceSid());

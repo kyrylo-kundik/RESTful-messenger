@@ -1,7 +1,9 @@
 package com.lknmproduction.messengerrest.controllers;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.lknmproduction.messengerrest.domain.Device;
 import com.lknmproduction.messengerrest.domain.redis.DeviceConfirmRedis;
+import com.lknmproduction.messengerrest.domain.utils.PhoneDeviceBaseLogin;
 import com.lknmproduction.messengerrest.domain.utils.StringResponsePinCode;
 import com.lknmproduction.messengerrest.repositories.redis.RedisRepository;
 import com.lknmproduction.messengerrest.service.UserService;
@@ -10,7 +12,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
@@ -21,22 +25,26 @@ import static com.lknmproduction.messengerrest.security.SecurityConstants.TOKEN_
 @RequestMapping(LoginController.BASE_URL)
 public class LoginController {
 
-    public static final String BASE_URL = "/api/v1/user";
+    public static final String BASE_URL = "/api/v1/users";
 
     private final UserService userService;
     private final RedisRepository redisRepository;
     private final JwtTokenService jwtTokenService;
+    private final HttpServletRequest req;
     private static final Random RANDOM = new Random(System.nanoTime());
 
-    public LoginController(UserService userService, RedisRepository redisRepository, JwtTokenService jwtTokenService) {
+    public LoginController(UserService userService, RedisRepository redisRepository, JwtTokenService jwtTokenService, HttpServletRequest req) {
         this.userService = userService;
         this.redisRepository = redisRepository;
         this.jwtTokenService = jwtTokenService;
+        this.req = req;
     }
 
     @PostMapping("/login")
     @ResponseBody
-    public ResponseEntity<?> login(@RequestHeader(HEADER_STRING) String token, @RequestParam String phoneNumber, @RequestParam String deviceId, HttpServletResponse res) {
+    public ResponseEntity<?> login(@RequestBody PhoneDeviceBaseLogin baseLogin, HttpServletResponse res) {
+
+        String token = req.getHeader(HEADER_STRING);
 
         if (token != null && token.startsWith(TOKEN_PREFIX)) {
             // checking if user was already active
@@ -50,18 +58,18 @@ public class LoginController {
         responsePinCode.setPinCode(pinCode);
 
         DeviceConfirmRedis device = new DeviceConfirmRedis();
-        device.setDeviceId(deviceId);
+        device.setDeviceId(baseLogin.getDeviceId());
         device.setPinCode(pinCode);
         redisRepository.save(device);
 
-        token = jwtTokenService.encodeToken(phoneNumber, deviceId, false, false);
+        token = jwtTokenService.encodeToken(baseLogin.getPhoneNumber(), baseLogin.getDeviceId(), false, false);
         res.addHeader(HEADER_STRING, TOKEN_PREFIX + token);
         return new ResponseEntity<>(responsePinCode, HttpStatus.OK);
     }
 
     @PostMapping("/confirmLogin")
     @ResponseBody
-    public ResponseEntity<?> confirmLogin(@RequestHeader(HEADER_STRING) String token, @RequestParam String pinCode, HttpServletResponse res) {
+    public ResponseEntity<?> confirmLogin(@RequestHeader(HEADER_STRING) String token, @RequestBody StringResponsePinCode pinCode, HttpServletResponse res) {
         if (token == null || !token.startsWith(TOKEN_PREFIX)) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
@@ -77,12 +85,14 @@ public class LoginController {
             return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
 
         DeviceConfirmRedis device = (DeviceConfirmRedis) optional.get();
-        if (!pinCode.equals(device.getPinCode()))
+        if (!pinCode.getPinCode().equals(device.getPinCode()))
             return new ResponseEntity<>("Pin code is not correct!", HttpStatus.UNAUTHORIZED);
 
         redisRepository.deleteById(deviceId);
 
-        if (userService.userDevicesByPhoneNumber(phoneNumber).stream().anyMatch(d -> d.getId().equals(deviceId))) {
+        List<Device> deviceList = userService.userDevicesByPhoneNumber(phoneNumber);
+
+        if (deviceList != null && deviceList.stream().anyMatch(d -> d.getId().equals(deviceId))) {
             token = jwtTokenService.encodeToken(phoneNumber, deviceId, true, true);
         } else {
             token = jwtTokenService.encodeToken(phoneNumber, deviceId, true, false);

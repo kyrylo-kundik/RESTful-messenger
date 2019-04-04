@@ -8,6 +8,7 @@ import javax.persistence.*;
 @Data
 @EqualsAndHashCode(exclude = "user")
 @Entity
+@Table
 public class Device {
 
     @Id

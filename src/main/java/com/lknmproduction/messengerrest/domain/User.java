@@ -10,6 +10,7 @@ import java.util.List;
 @Data
 @EqualsAndHashCode(exclude = "deviceList")
 @Entity
+@Table(name = "users")
 public class User {
 
     @Id
@@ -31,9 +32,10 @@ public class User {
     //    @OneToMany(fetch = FetchType.EAGER, mappedBy = "user", orphanRemoval = true, cascade = {
 //            CascadeType.PERSIST, CascadeType.REMOVE})
 //    @JoinColumn(name = "user_fk")
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, orphanRemoval = true, cascade = {
+    @OneToMany(fetch = FetchType.EAGER, orphanRemoval = true, cascade = {
             CascadeType.PERSIST, CascadeType.REMOVE
     })
+    @JoinColumn(name = "user_fk")
     private List<Device> deviceList;
 
 }
