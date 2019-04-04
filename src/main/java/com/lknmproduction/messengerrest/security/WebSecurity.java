@@ -1,6 +1,8 @@
 package com.lknmproduction.messengerrest.security;
 
-import customerRestExample.service.CustomerDetailsServiceImpl;
+import com.lknmproduction.messengerrest.security.filters.JWTAuthenticationFilter;
+import com.lknmproduction.messengerrest.security.filters.JWTAuthorizationFilter;
+import com.lknmproduction.messengerrest.service.impl.security.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -8,7 +10,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -19,13 +20,11 @@ import static com.lknmproduction.messengerrest.security.SecurityConstants.LOGIN_
 @EnableWebSecurity
 public class WebSecurity extends WebSecurityConfigurerAdapter {
 
-//    private CustomerDetailsServiceImpl userDetailsService;
-//    private BCryptPasswordEncoder bCryptPasswordEncoder;
-//
-//    public WebSecurity(CustomerDetailsServiceImpl userDetailsService, BCryptPasswordEncoder bCryptPasswordEncoder) {
-//        this.userDetailsService = userDetailsService;
-//        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-//    }
+    private final UserDetailsServiceImpl userDetailsService;
+
+    public WebSecurity(UserDetailsServiceImpl userDetailsService) {
+        this.userDetailsService = userDetailsService;
+    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -34,16 +33,16 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, CONFIRM_LOGIN_URL).permitAll()
                 .antMatchers("/api/v1/customers**/**").authenticated()
                 .and()
-//                .addFilter(new JWTAuthenticationFilter(authenticationManager()))
+                .addFilter(new JWTAuthenticationFilter(authenticationManager()))
                 .addFilter(new JWTAuthorizationFilter(authenticationManager()))
                 // this disables session creation on Spring Security
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     }
 
-//    @Override
-//    public void configure(AuthenticationManagerBuilder auth) throws Exception {
-//        auth.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder);
-//    }
+    @Override
+    public void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(userDetailsService);
+    }
 
     @Bean
     CorsConfigurationSource corsConfigurationSource() {

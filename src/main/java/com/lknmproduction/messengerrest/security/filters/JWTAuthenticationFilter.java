@@ -1,14 +1,13 @@
-package com.lknmproduction.messengerrest.security;
+package com.lknmproduction.messengerrest.security.filters;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import customerRestExample.domain.Customer;
+import com.lknmproduction.messengerrest.domain.User;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.servlet.FilterChain;
@@ -31,12 +30,12 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         try {
-            Customer creds = new ObjectMapper()
-                    .readValue(request.getInputStream(), Customer.class);
+            User creds = new ObjectMapper()
+                    .readValue(request.getInputStream(), User.class);
             return authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
-                            creds.getLastname(),
-                            creds.getPass(),
+                            creds.getPhoneNumber(),
+                            creds.getPhoneNumber(),
                             new ArrayList<>())
             );
         } catch (IOException e) {
@@ -46,11 +45,13 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     @Override
     protected void successfulAuthentication(HttpServletRequest req,
-                                         HttpServletResponse res,
-                                         FilterChain chain,
-                                         Authentication auth) {
+                                            HttpServletResponse res,
+                                            FilterChain chain,
+                                            Authentication auth) {
         String token = JWT.create()
-                .withClaim("is_active", false)
+                .withClaim("isActive", true)
+                .withClaim("isSignedup", true)
+                .withClaim("phoneNumber", ((User) auth.getPrincipal()).getPhoneNumber())
                 .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .sign(Algorithm.HMAC512(SECRET.getBytes()));
         res.addHeader(HEADER_STRING, TOKEN_PREFIX + token);

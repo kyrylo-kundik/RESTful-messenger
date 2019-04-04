@@ -1,4 +1,4 @@
-package com.lknmproduction.messengerrest.security;
+package com.lknmproduction.messengerrest.security.filters;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -47,13 +47,12 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
             DecodedJWT jwt = JWT.require(Algorithm.HMAC512(SECRET.getBytes()))
                     .build()
                     .verify(token.replace(TOKEN_PREFIX, ""));
-            if (!jwt.getClaim("isActive").as(Boolean.class))
+            if (!jwt.getClaim("isActive").asBoolean())
+                return null;
+            if (!jwt.getClaim("isSignedup").asBoolean())
                 return null;
             // parse the token.
-            String user = JWT.require(Algorithm.HMAC512(SECRET.getBytes()))
-                    .build()
-                    .verify(token.replace(TOKEN_PREFIX, ""))
-                    .getSubject();
+            String user = jwt.getClaim("phoneNumber").asString();
 
             if (user != null) {
                 return new UsernamePasswordAuthenticationToken(user, null, new ArrayList<>());
