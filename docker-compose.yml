@@ -1,0 +1,28 @@
+version: '3'
+services:
+  postgres:
+    image: postgres:9.6
+    environment:
+      POSTGRES_PASSWORD: karpovich
+      POSTGRES_USER: postgres
+      POSTGRES_DB: messenger_rest
+    ports:
+      - "5432:5432"
+    restart: always
+
+  redis:
+    image: redis:5.0.4
+    ports:
+      - "6379:6379"
+    restart: always
+
+  app:
+    build: .
+    volumes:
+      - .:/app
+      - ~/.m2:/root/.m2
+    working_dir: /app
+    command: mvn clean spring-boot:run
+    depends_on:
+      - postgres
+      - redis
