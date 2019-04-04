@@ -52,7 +52,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<Device> userDevicesByPhoneNumber(String phoneNumber) {
-        return userRepository.findFirstByPhoneNumber(phoneNumber).getDeviceList();
+        User user = userRepository.findFirstByPhoneNumber(phoneNumber);
+        if (user != null)
+            return user.getDeviceList();
+        return null;
     }
 
     @Override
