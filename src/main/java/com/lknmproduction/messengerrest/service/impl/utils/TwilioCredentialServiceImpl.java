@@ -1,6 +1,6 @@
-package com.lknmproduction.messengerrest.service.impl;
+package com.lknmproduction.messengerrest.service.impl.utils;
 
-import com.lknmproduction.messengerrest.service.TwilioCredentialService;
+import com.lknmproduction.messengerrest.service.utils.TwilioCredentialService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;

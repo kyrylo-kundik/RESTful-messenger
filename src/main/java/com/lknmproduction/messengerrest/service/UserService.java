@@ -1,5 +1,6 @@
 package com.lknmproduction.messengerrest.service;
 
+import com.lknmproduction.messengerrest.domain.Device;
 import com.lknmproduction.messengerrest.domain.User;
 
 import java.util.List;
@@ -16,4 +17,7 @@ public interface UserService {
 
     public User deleteUserById(Long id);
 
+    public List<Device> userDevicesByPhoneNumber(String phoneNumber);
+
+    public User findUserByPhoneNumber(String phoneNumber);
 }
