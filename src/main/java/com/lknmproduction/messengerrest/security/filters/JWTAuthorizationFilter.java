@@ -1,7 +1,8 @@
-package com.lknmproduction.messengerrest.security;
+package com.lknmproduction.messengerrest.security.filters;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -43,11 +44,15 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
     private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest req) {
         String token = req.getHeader(HEADER_STRING);
         if (token != null) {
-            // parse the token.
-            String user = JWT.require(Algorithm.HMAC512(SECRET.getBytes()))
+            DecodedJWT jwt = JWT.require(Algorithm.HMAC512(SECRET.getBytes()))
                     .build()
-                    .verify(token.replace(TOKEN_PREFIX, ""))
-                    .getSubject();
+                    .verify(token.replace(TOKEN_PREFIX, ""));
+            if (!jwt.getClaim("isActive").asBoolean())
+                return null;
+            if (!jwt.getClaim("isSignedup").asBoolean())
+                return null;
+            // parse the token.
+            String user = jwt.getClaim("phoneNumber").asString();
 
             if (user != null) {
                 return new UsernamePasswordAuthenticationToken(user, null, new ArrayList<>());

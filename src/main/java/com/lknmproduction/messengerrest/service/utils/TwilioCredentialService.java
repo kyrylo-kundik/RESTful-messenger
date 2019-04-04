@@ -1,4 +1,4 @@
-package com.lknmproduction.messengerrest.service;
+package com.lknmproduction.messengerrest.service.utils;
 
 public interface TwilioCredentialService {
 
