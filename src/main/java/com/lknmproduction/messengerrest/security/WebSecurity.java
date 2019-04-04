@@ -14,8 +14,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import static com.lknmproduction.messengerrest.security.SecurityConstants.CONFIRM_LOGIN_URL;
-import static com.lknmproduction.messengerrest.security.SecurityConstants.LOGIN_URL;
+import static com.lknmproduction.messengerrest.security.SecurityConstants.*;
 
 @EnableWebSecurity
 public class WebSecurity extends WebSecurityConfigurerAdapter {
@@ -31,6 +30,7 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
         http.cors().and().csrf().disable().authorizeRequests()
                 .antMatchers(HttpMethod.POST, LOGIN_URL).permitAll()
                 .antMatchers(HttpMethod.POST, CONFIRM_LOGIN_URL).permitAll()
+                .antMatchers(HttpMethod.POST, CREATE_USER_URL).permitAll()
                 .antMatchers("/api/v1/customers**/**").authenticated()
                 .and()
                 .addFilter(new JWTAuthenticationFilter(authenticationManager()))

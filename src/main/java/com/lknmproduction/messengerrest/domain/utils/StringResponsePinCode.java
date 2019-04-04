@@ -6,6 +6,5 @@ import lombok.Data;
 public class StringResponsePinCode {
 
     private String pinCode;
-    private String jwtToken;
 
 }
