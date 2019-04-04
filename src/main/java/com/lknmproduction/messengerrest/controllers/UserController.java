@@ -1,19 +1,16 @@
 package com.lknmproduction.messengerrest.controllers;
 
 import com.lknmproduction.messengerrest.domain.User;
-import com.lknmproduction.messengerrest.service.TwilioCredentialService;
+import com.lknmproduction.messengerrest.service.utils.TwilioCredentialService;
 import com.lknmproduction.messengerrest.service.UserService;
 import com.twilio.jwt.accesstoken.AccessToken;
 import com.twilio.jwt.accesstoken.ChatGrant;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
-@PropertySource(ignoreResourceNotFound = true, value = "classpath:twillioCredentials/env.properties")
 @RestController
 @RequestMapping(UserController.BASE_URL)
 public class UserController {
