@@ -16,7 +16,7 @@ public class Device {
     private Long pushId;
     @Column(name = "is_active")
     private Boolean isActive;
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     private User user;
 
 }
