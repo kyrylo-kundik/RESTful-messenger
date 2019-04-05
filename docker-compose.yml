@@ -9,13 +9,22 @@ services:
     ports:
       - "5432:5432"
     restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   redis:
-    image: redis:5.0.4
-    hostname: redis
+    image: redis:latest
+    restart: always
     ports:
       - "6379:6379"
-    restart: always
+    healthcheck:
+      test: ["CMD", "redis-cli","ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   app:
     build: .
@@ -27,7 +36,7 @@ services:
     ports:
       - "8080:8080"
     links:
-      - "redis:redis"
+      - redis
       - postgres
     depends_on:
       - postgres
