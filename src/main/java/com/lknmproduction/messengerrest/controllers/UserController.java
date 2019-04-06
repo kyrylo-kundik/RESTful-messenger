@@ -4,7 +4,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.lknmproduction.messengerrest.domain.Device;
 import com.lknmproduction.messengerrest.domain.User;
 import com.lknmproduction.messengerrest.service.utils.JwtTokenService;
-import com.lknmproduction.messengerrest.service.utils.TwilioCredentialService;
+import com.lknmproduction.messengerrest.service.utils.twilio.TwilioCredentialService;
 import com.lknmproduction.messengerrest.service.UserService;
 import com.twilio.jwt.accesstoken.AccessToken;
 import com.twilio.jwt.accesstoken.ChatGrant;
