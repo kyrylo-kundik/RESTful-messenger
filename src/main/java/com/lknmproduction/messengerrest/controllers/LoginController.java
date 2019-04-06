@@ -124,8 +124,9 @@ public class LoginController {
 
         DecodedJWT jwt = jwtTokenService.decodeToken(token);
 
-        if (jwt.getClaim("isActive").asBoolean())
-            return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
+        //TODO rethink this
+//        if (jwt.getClaim("isActive").asBoolean())
+//            return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
 
         String deviceId = jwt.getClaim("deviceId").asString();
         Optional optional = redisRepository.findById(deviceId);
@@ -142,10 +143,8 @@ public class LoginController {
             pinCode = ((DeviceConfirmRedis) optional.get()).getPinCode();
         }
 
-        StringResponsePinCode resetPinCode = new StringResponsePinCode();
-
-        resetPinCode.setPinCode(pinCode);
-        return new ResponseEntity<>(resetPinCode, HttpStatus.OK);
+        twilioService.sendMessage(jwt.getClaim("phoneNumber").asString(), "Your pin code: " + pinCode);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     private String generatePinCode() {
