@@ -5,7 +5,6 @@ import com.lknmproduction.messengerrest.domain.Device;
 import com.lknmproduction.messengerrest.domain.redis.DeviceConfirmRedis;
 import com.lknmproduction.messengerrest.domain.utils.PhoneDeviceBaseLogin;
 import com.lknmproduction.messengerrest.domain.utils.StringResponsePinCode;
-import com.lknmproduction.messengerrest.domain.utils.StringResponsePinCodeJWT;
 import com.lknmproduction.messengerrest.domain.utils.StringResponseToken;
 import com.lknmproduction.messengerrest.repositories.redis.RedisRepository;
 import com.lknmproduction.messengerrest.service.UserService;
@@ -16,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -47,7 +45,7 @@ public class LoginController {
 
     @PostMapping("/login")
     @ResponseBody
-    public ResponseEntity<?> login(@RequestBody PhoneDeviceBaseLogin baseLogin, HttpServletResponse res) {
+    public ResponseEntity<?> login(@RequestBody PhoneDeviceBaseLogin baseLogin) {
 
         String token = req.getHeader(HEADER_STRING);
 
@@ -82,7 +80,7 @@ public class LoginController {
 
     @PostMapping("/confirmLogin")
     @ResponseBody
-    public ResponseEntity<?> confirmLogin(@RequestHeader(HEADER_STRING) String token, @RequestBody StringResponsePinCode pinCode, HttpServletResponse res) {
+    public ResponseEntity<?> confirmLogin(@RequestHeader(HEADER_STRING) String token, @RequestBody StringResponsePinCode pinCode) {
         if (token == null || !token.startsWith(TOKEN_PREFIX)) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
@@ -151,7 +149,7 @@ public class LoginController {
     }
 
     private String generatePinCode() {
-        return String.format("%04d", RANDOM.nextInt(10000));
+        return String.format("%06d", RANDOM.nextInt(1000000));
     }
 
 }
