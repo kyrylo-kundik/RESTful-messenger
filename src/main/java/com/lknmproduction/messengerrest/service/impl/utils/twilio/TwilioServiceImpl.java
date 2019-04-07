@@ -3,8 +3,9 @@ package com.lknmproduction.messengerrest.service.impl.utils.twilio;
 import com.lknmproduction.messengerrest.service.utils.twilio.TwilioCredentialService;
 import com.lknmproduction.messengerrest.service.utils.twilio.TwilioService;
 import com.twilio.Twilio;
+import com.twilio.jwt.accesstoken.AccessToken;
+import com.twilio.jwt.accesstoken.ChatGrant;
 import com.twilio.rest.api.v2010.account.Message;
-import com.twilio.rest.api.v2010.account.ValidationRequest;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -32,5 +33,17 @@ public class TwilioServiceImpl implements TwilioService {
                 .create();
         System.out.println("Message Sid:");
         System.out.println(message.getSid());
+    }
+
+    @Override
+    public String getChatToken(String jwtTokenUser) {
+        ChatGrant grant = new ChatGrant();
+        grant.setServiceSid(twilioCredentialService.getServiceSid());
+
+        AccessToken token = new AccessToken.Builder(twilioCredentialService.getTwilioAccountSid(),
+                twilioCredentialService.getTwilioApiKey(), twilioCredentialService.getTwilioApiSecret())
+                .identity(jwtTokenUser).grant(grant).build();
+
+        return token.toJwt();
     }
 }
