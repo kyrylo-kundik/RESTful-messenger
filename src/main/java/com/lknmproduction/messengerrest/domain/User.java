@@ -28,6 +28,7 @@ public class User {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "last_seen")
     private Date lastSeen;
+    private String bio;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "user_to_device",
