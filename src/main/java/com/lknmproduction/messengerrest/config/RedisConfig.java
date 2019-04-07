@@ -3,10 +3,9 @@ package com.lknmproduction.messengerrest.config;
 import com.lknmproduction.messengerrest.service.impl.redis.MessagePublisherImpl;
 import com.lknmproduction.messengerrest.service.impl.redis.MessageSubscriber;
 import com.lknmproduction.messengerrest.service.redis.MessagePublisher;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
+import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
+import org.springframework.context.annotation.*;
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
@@ -23,7 +22,11 @@ public class RedisConfig {
 
     @Bean
     JedisConnectionFactory jedisConnectionFactory() {
-        return new JedisConnectionFactory();
+        RedisProperties properties = redisProperties();
+        RedisStandaloneConfiguration conf = new RedisStandaloneConfiguration();
+        conf.setHostName(properties.getHost());
+        conf.setPort(properties.getPort());
+        return new JedisConnectionFactory(conf);
     }
 
     @Bean
@@ -56,4 +59,11 @@ public class RedisConfig {
     ChannelTopic topic() {
         return new ChannelTopic("pubsub:queue");
     }
+
+    @Bean
+    @Primary
+    public RedisProperties redisProperties() {
+        return new RedisProperties();
+    }
+
 }
