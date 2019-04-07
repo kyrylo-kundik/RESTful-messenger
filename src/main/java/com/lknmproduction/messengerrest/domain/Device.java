@@ -1,5 +1,6 @@
 package com.lknmproduction.messengerrest.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -19,6 +20,7 @@ public class Device {
     @Column(name = "is_active")
     private Boolean isActive;
     @ManyToMany(mappedBy = "deviceList", fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<User> user;
 
 }
