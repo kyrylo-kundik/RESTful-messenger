@@ -1,5 +1,6 @@
 package com.lknmproduction.messengerrest.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -35,6 +36,7 @@ public class User {
             joinColumns = {@JoinColumn(name = "user_id")},
             inverseJoinColumns = {@JoinColumn(name = "device_id")}
     )
+    @JsonIgnore
     private List<Device> deviceList;
 
 }
