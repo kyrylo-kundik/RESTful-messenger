@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Data
 @EqualsAndHashCode(exclude = "user")
@@ -17,7 +18,7 @@ public class Device {
     private Long pushId;
     @Column(name = "is_active")
     private Boolean isActive;
-    @ManyToOne
-    private User user;
+    @ManyToMany(mappedBy = "deviceList")
+    private List<User> user;
 
 }
