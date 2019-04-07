@@ -18,7 +18,7 @@ public class Device {
     private Long pushId;
     @Column(name = "is_active")
     private Boolean isActive;
-    @ManyToMany(mappedBy = "deviceList")
+    @ManyToMany(mappedBy = "deviceList", fetch = FetchType.LAZY)
     private List<User> user;
 
 }
