@@ -4,6 +4,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.lknmproduction.messengerrest.domain.Device;
 import com.lknmproduction.messengerrest.domain.User;
 import com.lknmproduction.messengerrest.domain.utils.PhoneList;
+import com.lknmproduction.messengerrest.domain.utils.StringResponseChatToken;
 import com.lknmproduction.messengerrest.domain.utils.StringResponseToken;
 import com.lknmproduction.messengerrest.service.utils.JwtTokenService;
 import com.lknmproduction.messengerrest.service.UserService;
@@ -82,8 +83,11 @@ public class UserController {
     }
 
     @GetMapping("/chatToken")
-    public String getChatToken(@RequestHeader(HEADER_STRING) String jwtTokenUser) {
-        return twilioService.getChatToken(jwtTokenService.decodeToken(jwtTokenUser).getClaim("phoneNumber").asString());
+    @ResponseBody
+    public StringResponseChatToken getChatToken(@RequestHeader(HEADER_STRING) String jwtTokenUser) {
+        StringResponseChatToken token = new StringResponseChatToken();
+        token.setChatToken(twilioService.getChatToken(jwtTokenService.decodeToken(jwtTokenUser).getClaim("phoneNumber").asString()));
+        return token;
     }
 
 }
