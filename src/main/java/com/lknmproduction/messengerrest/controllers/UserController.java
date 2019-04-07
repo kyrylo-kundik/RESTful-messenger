@@ -3,11 +3,10 @@ package com.lknmproduction.messengerrest.controllers;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.lknmproduction.messengerrest.domain.Device;
 import com.lknmproduction.messengerrest.domain.User;
+import com.lknmproduction.messengerrest.domain.utils.StringResponseToken;
 import com.lknmproduction.messengerrest.service.utils.JwtTokenService;
-import com.lknmproduction.messengerrest.service.utils.twilio.TwilioCredentialService;
 import com.lknmproduction.messengerrest.service.UserService;
-import com.twilio.jwt.accesstoken.AccessToken;
-import com.twilio.jwt.accesstoken.ChatGrant;
+import com.lknmproduction.messengerrest.service.utils.twilio.TwilioService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,12 +23,12 @@ public class UserController {
     public static final String BASE_URL = "/api/v1/user";
     private final UserService userService;
     private final JwtTokenService jwtTokenService;
-    private final TwilioCredentialService twilioCredentialService;
+    private final TwilioService twilioService;
 
-    public UserController(UserService userService, JwtTokenService jwtTokenService, TwilioCredentialService twilioCredentialService) {
+    public UserController(UserService userService, JwtTokenService jwtTokenService, TwilioService twilioService) {
         this.userService = userService;
         this.jwtTokenService = jwtTokenService;
-        this.twilioCredentialService = twilioCredentialService;
+        this.twilioService = twilioService;
     }
 
     @GetMapping("/{id}")
@@ -56,33 +55,30 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
         }
 
-        if (!user.getPhoneNumber().equals(decodedJWT.getClaim("phoneNumber").asString()))
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        String phoneNumber = decodedJWT.getClaim("phoneNumber").asString();
+        String deviceId = decodedJWT.getClaim("deviceId").asString();
+
+        user.setPhoneNumber(phoneNumber);
 
         Device device = new Device();
         device.setIsActive(true);
-        device.setId(decodedJWT.getClaim("deviceId").asString());
+        device.setId(deviceId);
 
         List<Device> deviceList = new ArrayList<>();
         deviceList.add(device);
 
         user.setDeviceList(deviceList);
-        User createdUser = userService.saveUser(user);
+        userService.saveUser(user);
 
-        return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
+        StringResponseToken responseToken = new StringResponseToken();
+        responseToken.setToken(jwtTokenService.encodeToken(phoneNumber, deviceId, true, true));
+
+        return new ResponseEntity<>(responseToken, HttpStatus.CREATED);
     }
 
     @GetMapping("/chatToken")
     public String getChatToken(@RequestHeader(HEADER_STRING) String jwtTokenUser) {
-
-        ChatGrant grant = new ChatGrant();
-        grant.setServiceSid(twilioCredentialService.getServiceSid());
-
-        AccessToken token = new AccessToken.Builder(twilioCredentialService.getTwilioAccountSid(),
-                twilioCredentialService.getTwilioApiKey(), twilioCredentialService.getTwilioApiSecret())
-                .identity(jwtTokenUser).grant(grant).build();
-
-        return token.toJwt();
+        return twilioService.getChatToken(jwtTokenUser);
     }
 
 }
