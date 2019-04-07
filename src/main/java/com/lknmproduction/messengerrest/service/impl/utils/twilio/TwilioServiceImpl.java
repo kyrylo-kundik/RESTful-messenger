@@ -36,13 +36,13 @@ public class TwilioServiceImpl implements TwilioService {
     }
 
     @Override
-    public String getChatToken(String jwtTokenUser) {
+    public String getChatToken(String phoneNumber) {
         ChatGrant grant = new ChatGrant();
         grant.setServiceSid(twilioCredentialService.getServiceSid());
 
         AccessToken token = new AccessToken.Builder(twilioCredentialService.getTwilioAccountSid(),
                 twilioCredentialService.getTwilioApiKey(), twilioCredentialService.getTwilioApiSecret())
-                .identity(jwtTokenUser).grant(grant).build();
+                .identity(phoneNumber).grant(grant).build();
 
         return token.toJwt();
     }
