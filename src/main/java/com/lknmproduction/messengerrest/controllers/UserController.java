@@ -83,7 +83,7 @@ public class UserController {
 
     @GetMapping("/chatToken")
     public String getChatToken(@RequestHeader(HEADER_STRING) String jwtTokenUser) {
-        return twilioService.getChatToken(jwtTokenUser);
+        return twilioService.getChatToken(jwtTokenService.decodeToken(jwtTokenUser).getClaim("phoneNumber").asString());
     }
 
 }
