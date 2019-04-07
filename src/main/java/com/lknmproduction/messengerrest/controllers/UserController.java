@@ -3,6 +3,7 @@ package com.lknmproduction.messengerrest.controllers;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.lknmproduction.messengerrest.domain.Device;
 import com.lknmproduction.messengerrest.domain.User;
+import com.lknmproduction.messengerrest.domain.utils.PhoneList;
 import com.lknmproduction.messengerrest.domain.utils.StringResponseToken;
 import com.lknmproduction.messengerrest.service.utils.JwtTokenService;
 import com.lknmproduction.messengerrest.service.UserService;
@@ -12,7 +13,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static com.lknmproduction.messengerrest.security.SecurityConstants.HEADER_STRING;
 
@@ -31,19 +35,21 @@ public class UserController {
         this.twilioService = twilioService;
     }
 
-    @GetMapping("/{id}")
-    public User getUserById(@PathVariable Long id) {
-        return userService.findUserById(id);
-    }
-
-    @DeleteMapping("/{id}")
-    public User deleteUserById(@PathVariable Long id) {
-        return userService.deleteUserById(id);
-    }
-
     @GetMapping
-    public List<User> getUsers() {
-        return userService.findUsers();
+    @ResponseBody
+    public User getUser(@RequestHeader(HEADER_STRING) String token) {
+        return userService.findUserByPhoneNumber(jwtTokenService.decodeToken(token).getClaim("phoneNumber").asString());
+    }
+
+    @PostMapping("/getUsersByPhones")
+    @ResponseBody
+    public List<User> getUsersByPhones(@RequestBody PhoneList phoneList) {
+        return phoneList
+                .getPhoneList()
+                .stream()
+                .map(userService::findUserByPhoneNumber)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 
     @PostMapping("/createUser")
