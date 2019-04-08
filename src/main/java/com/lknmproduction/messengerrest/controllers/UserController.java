@@ -48,12 +48,18 @@ public class UserController {
         String phoneNumber = jwt.getClaim("phoneNumber").asString();
 
         User existedUser = userService.findUserByPhoneNumber(phoneNumber);
-        existedUser.setBio(user.getBio());
-        existedUser.setLastSeen(user.getLastSeen());
-        existedUser.setPhotoUrl(user.getPhotoUrl());
-        existedUser.setUsername(user.getUsername());
-        existedUser.setLastName(user.getLastName());
-        existedUser.setFirstName(user.getFirstName());
+        if (user.getBio() != null && user.getBio().equals(""))
+            existedUser.setBio(user.getBio());
+        if (user.getLastSeen() != null && user.getLastSeen().equals(new Date(0)))
+            existedUser.setLastSeen(user.getLastSeen());
+        if (user.getPhotoUrl() != null && user.getPhotoUrl().equals(""))
+            existedUser.setPhotoUrl(user.getPhotoUrl());
+        if (user.getUsername() != null && user.getUsername().equals(""))
+            existedUser.setUsername(user.getUsername());
+        if (user.getLastName() != null && user.getLastName().equals(""))
+            existedUser.setLastName(user.getLastName());
+        if (user.getFirstName() != null && user.getFirstName().equals(""))
+            existedUser.setFirstName(user.getFirstName());
 
         userService.saveUser(existedUser);
         return existedUser;
