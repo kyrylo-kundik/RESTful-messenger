@@ -65,6 +65,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> findUserByPhoneNumberLike(String phoneNumber) {
-        return userRepository.findAllByPhoneNumberLike(phoneNumber);
+        return userRepository.findAllByPhoneNumberContains(phoneNumber);
     }
 }
