@@ -1,76 +1,118 @@
 package com.lknmproduction.messengerrest.controllers;
 
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.lknmproduction.messengerrest.domain.Device;
 import com.lknmproduction.messengerrest.domain.User;
-import com.lknmproduction.messengerrest.service.TwilioCredentialService;
+import com.lknmproduction.messengerrest.domain.utils.EditingUser;
+import com.lknmproduction.messengerrest.domain.utils.PhoneList;
+import com.lknmproduction.messengerrest.domain.utils.StringResponseChatToken;
+import com.lknmproduction.messengerrest.domain.utils.StringResponseToken;
+import com.lknmproduction.messengerrest.service.utils.JwtTokenService;
 import com.lknmproduction.messengerrest.service.UserService;
-import com.twilio.jwt.accesstoken.AccessToken;
-import com.twilio.jwt.accesstoken.ChatGrant;
-import org.springframework.context.annotation.PropertySource;
+import com.lknmproduction.messengerrest.service.utils.twilio.TwilioService;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
-@PropertySource(ignoreResourceNotFound = true, value = "classpath:twillioCredentials/env.properties")
+import static com.lknmproduction.messengerrest.security.SecurityConstants.HEADER_STRING;
+
 @RestController
 @RequestMapping(UserController.BASE_URL)
 public class UserController {
 
     public static final String BASE_URL = "/api/v1/user";
     private final UserService userService;
-    private final TwilioCredentialService twilioCredentialService;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final JwtTokenService jwtTokenService;
+    private final TwilioService twilioService;
 
-    public UserController(UserService userService, TwilioCredentialService twilioCredentialService, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public UserController(UserService userService, JwtTokenService jwtTokenService, TwilioService twilioService) {
         this.userService = userService;
-        this.twilioCredentialService = twilioCredentialService;
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-    }
-
-//    @PostMapping("/signUp")
-//    public void signUp(@RequestBody User user) {
-//        user.setPassHash(bCryptPasswordEncoder.encode(user.getPassHash()));
-//        userService.saveUser(user);
-//    }
-
-    @PutMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public User saveUser(@RequestBody User user) {
-        return userService.saveUser(user);
-    }
-
-    @PostMapping
-    public User updateUser(@RequestBody User user) {
-        return userService.updateUser(user);
-    }
-
-    @GetMapping("/{id}")
-    public User getUserById(@PathVariable Long id) {
-        return userService.findUserById(id);
-    }
-
-    @DeleteMapping("/{id}")
-    public User deleteUserById(@PathVariable Long id) {
-        return userService.deleteUserById(id);
+        this.jwtTokenService = jwtTokenService;
+        this.twilioService = twilioService;
     }
 
     @GetMapping
-    public List<User> getUsers() {
-        return userService.findUsers();
+    @ResponseBody
+    public User getUser(@RequestHeader(HEADER_STRING) String token) {
+        return userService.findUserByPhoneNumber(jwtTokenService.decodeToken(token).getClaim("phoneNumber").asString());
+    }
+
+    @PutMapping
+    @ResponseBody
+    public User editUser(@RequestHeader(HEADER_STRING) String token, @RequestBody EditingUser user) {
+
+        DecodedJWT jwt = jwtTokenService.decodeToken(token);
+        String phoneNumber = jwt.getClaim("phoneNumber").asString();
+
+        User existedUser = userService.findUserByPhoneNumber(phoneNumber);
+        if (user.getBio() != null && !user.getBio().equals(""))
+            existedUser.setBio(user.getBio());
+        if (user.getLastSeen() != null && !user.getLastSeen().equals(new Date(0)))
+            existedUser.setLastSeen(user.getLastSeen());
+        if (user.getPhotoUrl() != null && !user.getPhotoUrl().equals(""))
+            existedUser.setPhotoUrl(user.getPhotoUrl());
+        if (user.getUsername() != null && !user.getUsername().equals(""))
+            existedUser.setUsername(user.getUsername());
+        if (user.getLastName() != null && !user.getLastName().equals(""))
+            existedUser.setLastName(user.getLastName());
+        if (user.getFirstName() != null && !user.getFirstName().equals(""))
+            existedUser.setFirstName(user.getFirstName());
+
+        userService.saveUser(existedUser);
+        return existedUser;
+    }
+
+    @PostMapping("/getUsersByPhones")
+    @ResponseBody
+    public List<User> getUsersByPhones(@RequestBody PhoneList phoneList) {
+        return phoneList
+                .getPhoneList()
+                .stream()
+                .map(userService::findUserByPhoneNumberLike)
+                .flatMap(Collection::stream)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+    }
+
+    @PostMapping("/createUser")
+    @ResponseBody
+    public ResponseEntity<?> createUser(@RequestHeader(HEADER_STRING) String token, @RequestBody User user) {
+        DecodedJWT decodedJWT = jwtTokenService.decodeToken(token);
+
+        if (decodedJWT.getClaim("isActive").asBoolean() && decodedJWT.getClaim("isSignedup").asBoolean()) {
+            return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
+        }
+
+        String phoneNumber = decodedJWT.getClaim("phoneNumber").asString();
+        String deviceId = decodedJWT.getClaim("deviceId").asString();
+
+        user.setPhoneNumber(phoneNumber);
+
+        Device device = new Device();
+        device.setIsActive(true);
+        device.setId(deviceId);
+
+        List<Device> deviceList = new ArrayList<>();
+        deviceList.add(device);
+
+        user.setDeviceList(deviceList);
+        userService.saveUser(user);
+
+        StringResponseToken responseToken = new StringResponseToken();
+        responseToken.setToken(jwtTokenService.encodeToken(phoneNumber, deviceId, true, true));
+
+        return new ResponseEntity<>(responseToken, HttpStatus.CREATED);
     }
 
     @GetMapping("/chatToken")
-    public String getChatToken(@RequestHeader("Authorization") String jwtTokenUser) {
-
-        ChatGrant grant = new ChatGrant();
-        grant.setServiceSid(twilioCredentialService.getServiceSid());
-
-        AccessToken token = new AccessToken.Builder(twilioCredentialService.getTwilioAccountSid(),
-                twilioCredentialService.getTwilioApiKey(), twilioCredentialService.getTwilioApiSecret())
-                .identity(jwtTokenUser).grant(grant).build();
-
-        return token.toJwt();
+    @ResponseBody
+    public StringResponseChatToken getChatToken(@RequestHeader(HEADER_STRING) String jwtTokenUser) {
+        StringResponseChatToken token = new StringResponseChatToken();
+        token.setChatToken(twilioService.getChatToken(jwtTokenService.decodeToken(jwtTokenUser).getClaim("phoneNumber").asString()));
+        return token;
     }
 
 }

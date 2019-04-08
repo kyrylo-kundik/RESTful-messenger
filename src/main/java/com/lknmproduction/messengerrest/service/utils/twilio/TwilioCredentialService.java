@@ -1,4 +1,4 @@
-package com.lknmproduction.messengerrest.service;
+package com.lknmproduction.messengerrest.service.utils.twilio;
 
 public interface TwilioCredentialService {
 
@@ -10,4 +10,7 @@ public interface TwilioCredentialService {
 
     String getServiceSid();
 
+    String getAuthToken();
+
+    String getMessagingService();
 }

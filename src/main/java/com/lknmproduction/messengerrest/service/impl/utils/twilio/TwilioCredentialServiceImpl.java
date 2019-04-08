@@ -1,6 +1,6 @@
-package com.lknmproduction.messengerrest.service.impl;
+package com.lknmproduction.messengerrest.service.impl.utils.twilio;
 
-import com.lknmproduction.messengerrest.service.TwilioCredentialService;
+import com.lknmproduction.messengerrest.service.utils.twilio.TwilioCredentialService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
@@ -17,6 +17,10 @@ public class TwilioCredentialServiceImpl implements TwilioCredentialService {
     private String twilioApiSecret;
     @Value("${serviceSid}")
     private String serviceSid;
+    @Value("${authToken}")
+    private String authToken;
+    @Value("${messagingServiceSid}")
+    private String messageService;
 
     @Override
     public String getTwilioAccountSid() {
@@ -36,5 +40,15 @@ public class TwilioCredentialServiceImpl implements TwilioCredentialService {
     @Override
     public String getServiceSid() {
         return serviceSid;
+    }
+
+    @Override
+    public String getAuthToken() {
+        return authToken;
+    }
+
+    @Override
+    public String getMessagingService() {
+        return messageService;
     }
 }

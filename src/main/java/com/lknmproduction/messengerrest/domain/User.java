@@ -1,13 +1,17 @@
 package com.lknmproduction.messengerrest.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
 
 @Data
+@EqualsAndHashCode(exclude = "deviceList")
 @Entity
+@Table(name = "users")
 public class User {
 
     @Id
@@ -25,9 +29,15 @@ public class User {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "last_seen")
     private Date lastSeen;
+    @Column(length = 4096)
+    private String bio;
 
-    @OneToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_fk")
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(name = "user_to_device",
+            joinColumns = {@JoinColumn(name = "user_id")},
+            inverseJoinColumns = {@JoinColumn(name = "device_id")}
+    )
+    @JsonIgnore
     private List<Device> deviceList;
 
 }
