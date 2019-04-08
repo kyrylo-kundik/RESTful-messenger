@@ -48,17 +48,17 @@ public class UserController {
         String phoneNumber = jwt.getClaim("phoneNumber").asString();
 
         User existedUser = userService.findUserByPhoneNumber(phoneNumber);
-        if (user.getBio() != null && user.getBio().equals(""))
+        if (user.getBio() != null && !user.getBio().equals(""))
             existedUser.setBio(user.getBio());
-        if (user.getLastSeen() != null && user.getLastSeen().equals(new Date(0)))
+        if (user.getLastSeen() != null && !user.getLastSeen().equals(new Date(0)))
             existedUser.setLastSeen(user.getLastSeen());
-        if (user.getPhotoUrl() != null && user.getPhotoUrl().equals(""))
+        if (user.getPhotoUrl() != null && !user.getPhotoUrl().equals(""))
             existedUser.setPhotoUrl(user.getPhotoUrl());
-        if (user.getUsername() != null && user.getUsername().equals(""))
+        if (user.getUsername() != null && !user.getUsername().equals(""))
             existedUser.setUsername(user.getUsername());
-        if (user.getLastName() != null && user.getLastName().equals(""))
+        if (user.getLastName() != null && !user.getLastName().equals(""))
             existedUser.setLastName(user.getLastName());
-        if (user.getFirstName() != null && user.getFirstName().equals(""))
+        if (user.getFirstName() != null && !user.getFirstName().equals(""))
             existedUser.setFirstName(user.getFirstName());
 
         userService.saveUser(existedUser);
