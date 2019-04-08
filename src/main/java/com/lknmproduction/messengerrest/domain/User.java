@@ -29,6 +29,7 @@ public class User {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "last_seen")
     private Date lastSeen;
+    @Column(length = 4096)
     private String bio;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)

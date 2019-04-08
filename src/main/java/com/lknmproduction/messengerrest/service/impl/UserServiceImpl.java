@@ -62,4 +62,9 @@ public class UserServiceImpl implements UserService {
     public User findUserByPhoneNumber(String phoneNumber) {
         return userRepository.findFirstByPhoneNumber(phoneNumber);
     }
+
+    @Override
+    public List<User> findUserByPhoneNumberLike(String phoneNumber) {
+        return userRepository.findAllByPhoneNumberLike(phoneNumber);
+    }
 }
