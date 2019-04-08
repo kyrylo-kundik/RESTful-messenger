@@ -10,5 +10,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     User findFirstByPhoneNumber(String phoneNumber);
 
-    List<User> findAllByPhoneNumberLike(String phoneNumber);
+    List<User> findAllByPhoneNumberContains(String phoneNumber);
 }
