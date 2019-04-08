@@ -3,6 +3,7 @@ package com.lknmproduction.messengerrest.controllers;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.lknmproduction.messengerrest.domain.Device;
 import com.lknmproduction.messengerrest.domain.User;
+import com.lknmproduction.messengerrest.domain.utils.EditingUser;
 import com.lknmproduction.messengerrest.domain.utils.PhoneList;
 import com.lknmproduction.messengerrest.domain.utils.StringResponseChatToken;
 import com.lknmproduction.messengerrest.domain.utils.StringResponseToken;
@@ -14,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -41,13 +43,33 @@ public class UserController {
         return userService.findUserByPhoneNumber(jwtTokenService.decodeToken(token).getClaim("phoneNumber").asString());
     }
 
+    @PutMapping
+    @ResponseBody
+    public User editUser(@RequestHeader(HEADER_STRING) String token, @RequestBody EditingUser user) {
+
+        DecodedJWT jwt = jwtTokenService.decodeToken(token);
+        String phoneNumber = jwt.getClaim("phoneNumber").asString();
+
+        User existedUser = userService.findUserByPhoneNumber(phoneNumber);
+        existedUser.setBio(user.getBio());
+        existedUser.setLastSeen(user.getLastSeen());
+        existedUser.setPhotoUrl(user.getPhotoUrl());
+        existedUser.setUsername(user.getUsername());
+        existedUser.setLastName(user.getLastName());
+        existedUser.setFirstName(user.getFirstName());
+
+        userService.saveUser(existedUser);
+        return existedUser;
+    }
+
     @PostMapping("/getUsersByPhones")
     @ResponseBody
     public List<User> getUsersByPhones(@RequestBody PhoneList phoneList) {
         return phoneList
                 .getPhoneList()
                 .stream()
-                .map(userService::findUserByPhoneNumber)
+                .map(userService::findUserByPhoneNumberLike)
+                .flatMap(Collection::stream)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }

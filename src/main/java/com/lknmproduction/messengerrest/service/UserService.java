@@ -20,4 +20,7 @@ public interface UserService {
     public List<Device> userDevicesByPhoneNumber(String phoneNumber);
 
     public User findUserByPhoneNumber(String phoneNumber);
+
+    public List<User> findUserByPhoneNumberLike(String phoneNumber);
+
 }
