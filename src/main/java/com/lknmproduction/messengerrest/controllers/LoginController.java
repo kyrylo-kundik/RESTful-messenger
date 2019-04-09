@@ -6,7 +6,7 @@ import com.lknmproduction.messengerrest.domain.redis.DeviceConfirmRedis;
 import com.lknmproduction.messengerrest.domain.utils.PhoneDeviceBaseLogin;
 import com.lknmproduction.messengerrest.domain.utils.StringResponsePinCode;
 import com.lknmproduction.messengerrest.domain.utils.StringResponseToken;
-import com.lknmproduction.messengerrest.repositories.redis.RedisRepository;
+import com.lknmproduction.messengerrest.service.ConfirmPinCodeRedisService;
 import com.lknmproduction.messengerrest.service.UserService;
 import com.lknmproduction.messengerrest.service.utils.JwtTokenService;
 import com.lknmproduction.messengerrest.service.utils.twilio.TwilioService;
@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
-import java.util.Optional;
 import java.util.Random;
 
 import static com.lknmproduction.messengerrest.security.SecurityConstants.*;
@@ -29,15 +28,15 @@ public class LoginController {
     public static final String BASE_URL = "/api/v1/users";
 
     private final UserService userService;
-    private final RedisRepository redisRepository;
+    private final ConfirmPinCodeRedisService redisService;
     private final JwtTokenService jwtTokenService;
     private final TwilioService twilioService;
     private final HttpServletRequest req;
     private static final Random RANDOM = new Random(System.nanoTime());
 
-    public LoginController(UserService userService, RedisRepository redisRepository, JwtTokenService jwtTokenService, TwilioService twilioService, HttpServletRequest req) {
+    public LoginController(UserService userService, ConfirmPinCodeRedisService redisService, JwtTokenService jwtTokenService, TwilioService twilioService, HttpServletRequest req) {
         this.userService = userService;
-        this.redisRepository = redisRepository;
+        this.redisService = redisService;
         this.jwtTokenService = jwtTokenService;
         this.twilioService = twilioService;
         this.req = req;
@@ -66,7 +65,7 @@ public class LoginController {
         DeviceConfirmRedis device = new DeviceConfirmRedis();
         device.setDeviceId(baseLogin.getDeviceId());
         device.setPinCode(pinCode);
-        redisRepository.save(device);
+        redisService.addDevice(device);
 
         token = jwtTokenService.encodeToken(baseLogin.getPhoneNumber(), baseLogin.getDeviceId(), false, false);
         twilioService.sendMessage(baseLogin.getPhoneNumber(), "Your pin code: " + pinCode);
@@ -90,16 +89,15 @@ public class LoginController {
         String deviceId = jwt.getClaim("deviceId").asString();
         String phoneNumber = jwt.getClaim("phoneNumber").asString();
 
-        Optional optional = redisRepository.findById(deviceId);
+        DeviceConfirmRedis device = redisService.findById(deviceId);
 
-        if (!optional.isPresent())
+        if (device == null)
             return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
 
-        DeviceConfirmRedis device = (DeviceConfirmRedis) optional.get();
         if (!pinCode.getPinCode().equals(device.getPinCode()))
             return new ResponseEntity<>("Pin code is not correct!", HttpStatus.UNAUTHORIZED);
 
-        redisRepository.deleteById(deviceId);
+        redisService.deleteById(deviceId);
 
         List<Device> deviceList = userService.userDevicesByPhoneNumber(phoneNumber);
 
@@ -129,18 +127,20 @@ public class LoginController {
 //            return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
 
         String deviceId = jwt.getClaim("deviceId").asString();
-        Optional optional = redisRepository.findById(deviceId);
+        DeviceConfirmRedis deviceConfirmRedis = redisService.findById(deviceId);
         String pinCode;
-        if (!optional.isPresent()) {
+        if (deviceConfirmRedis == null) {
+
             pinCode = generatePinCode();
 
             DeviceConfirmRedis newDevice = new DeviceConfirmRedis();
             newDevice.setPinCode(pinCode);
             newDevice.setDeviceId(deviceId);
 
-            redisRepository.save(newDevice);
+            redisService.addDevice(newDevice);
+
         } else {
-            pinCode = ((DeviceConfirmRedis) optional.get()).getPinCode();
+            pinCode = deviceConfirmRedis.getPinCode();
         }
 
         twilioService.sendMessage(jwt.getClaim("phoneNumber").asString(), "Your pin code: " + pinCode);
