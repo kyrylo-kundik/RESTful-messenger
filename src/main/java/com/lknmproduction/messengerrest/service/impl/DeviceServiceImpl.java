@@ -7,6 +7,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -26,5 +27,11 @@ public class DeviceServiceImpl implements DeviceService {
         if (optional.isPresent())
             return (Device) optional.get();
         return null;
+    }
+
+    @Override
+    @Cacheable("device")
+    public List<String> getAllDevicePushId() {
+        return deviceRepository.findAllPushIds();
     }
 }
