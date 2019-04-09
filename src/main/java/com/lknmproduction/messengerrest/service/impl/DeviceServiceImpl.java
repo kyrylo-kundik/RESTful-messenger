@@ -5,9 +5,11 @@ import com.lknmproduction.messengerrest.repositories.DeviceRepository;
 import com.lknmproduction.messengerrest.service.DeviceService;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.Optional;
 
 @Service
+@Transactional
 public class DeviceServiceImpl implements DeviceService {
 
     private final DeviceRepository deviceRepository;
