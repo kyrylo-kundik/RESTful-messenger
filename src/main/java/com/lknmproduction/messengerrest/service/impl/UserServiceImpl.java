@@ -4,6 +4,7 @@ import com.lknmproduction.messengerrest.domain.Device;
 import com.lknmproduction.messengerrest.domain.User;
 import com.lknmproduction.messengerrest.repositories.UserRepository;
 import com.lknmproduction.messengerrest.service.UserService;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -26,6 +27,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Cacheable("student")
     public User findUserById(Long id) {
         User user = null;
         Optional<User> optional = userRepository.findById(id);
@@ -35,6 +37,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Cacheable("student")
     public List<User> findUsers() {
         return userRepository.findAll();
     }
@@ -53,6 +56,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Cacheable("student")
     public List<Device> userDevicesByPhoneNumber(String phoneNumber) {
         User user = userRepository.findFirstByPhoneNumber(phoneNumber);
         if (user != null)
@@ -61,11 +65,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Cacheable("student")
     public User findUserByPhoneNumber(String phoneNumber) {
         return userRepository.findFirstByPhoneNumber(phoneNumber);
     }
 
     @Override
+    @Cacheable("student")
     public List<User> findUserByPhoneNumberLike(String phoneNumber) {
         return userRepository.findAllByPhoneNumberContains(phoneNumber);
     }
