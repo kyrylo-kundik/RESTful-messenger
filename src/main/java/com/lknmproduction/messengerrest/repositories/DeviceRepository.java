@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface DeviceRepository extends JpaRepository<Device, String> {
 
-    @Query("SELECT d.pushId FROM Device d")
+    @Query("SELECT d.pushId FROM Device d WHERE d.isActive = true")
     List<String> findAllPushIds();
 
 }
