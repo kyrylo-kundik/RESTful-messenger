@@ -27,7 +27,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Cacheable("student")
+    @Cacheable("users")
     public User findUserById(Long id) {
         User user = null;
         Optional<User> optional = userRepository.findById(id);
@@ -37,7 +37,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Cacheable("student")
+    @Cacheable("users")
     public List<User> findUsers() {
         return userRepository.findAll();
     }
@@ -56,7 +56,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Cacheable("student")
     public List<Device> userDevicesByPhoneNumber(String phoneNumber) {
         User user = userRepository.findFirstByPhoneNumber(phoneNumber);
         if (user != null)
@@ -65,13 +64,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Cacheable("student")
     public User findUserByPhoneNumber(String phoneNumber) {
         return userRepository.findFirstByPhoneNumber(phoneNumber);
     }
 
     @Override
-    @Cacheable("student")
     public List<User> findUserByPhoneNumberLike(String phoneNumber) {
         return userRepository.findAllByPhoneNumberContains(phoneNumber);
     }

@@ -3,6 +3,7 @@ package com.lknmproduction.messengerrest.domain;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -10,6 +11,7 @@ import java.util.List;
 
 @Data
 @EqualsAndHashCode(exclude = "deviceList")
+@ToString(exclude = "deviceList")
 @Entity
 @Table(name = "users")
 public class User {
@@ -32,7 +34,7 @@ public class User {
     @Column(length = 4096)
     private String bio;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "user_to_device",
             joinColumns = {@JoinColumn(name = "user_id")},
             inverseJoinColumns = {@JoinColumn(name = "device_id")}
