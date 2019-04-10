@@ -2,6 +2,7 @@ package com.lknmproduction.messengerrest.controllers;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.lknmproduction.messengerrest.domain.Device;
+import com.lknmproduction.messengerrest.domain.User;
 import com.lknmproduction.messengerrest.domain.redis.DeviceConfirmRedis;
 import com.lknmproduction.messengerrest.domain.utils.PhoneDeviceBaseLogin;
 import com.lknmproduction.messengerrest.domain.utils.StringResponsePinCode;
@@ -99,9 +100,9 @@ public class LoginController {
 
         redisService.deleteById(deviceId);
 
-        List<Device> deviceList = userService.userDevicesByPhoneNumber(phoneNumber);
+        User user = userService.findUserByPhoneNumber(phoneNumber);
 
-        if (deviceList != null && deviceList.stream().anyMatch(d -> d.getId().equals(deviceId))) {
+        if (user != null) {
             token = jwtTokenService.encodeToken(phoneNumber, deviceId, true, true);
         } else {
             token = jwtTokenService.encodeToken(phoneNumber, deviceId, true, false);
