@@ -36,8 +36,11 @@ public class UserController {
 
     @GetMapping
     @ResponseBody
-    public User getUser(@RequestHeader(HEADER_STRING) String token) {
-        return userService.findUserByPhoneNumber(jwtTokenService.decodeToken(token).getClaim("phoneNumber").asString());
+    public ResponseEntity<?> getUser(@RequestHeader(HEADER_STRING) String token) {
+        User user = userService.findUserByPhoneNumber(jwtTokenService.decodeToken(token).getClaim("phoneNumber").asString());
+        if (user == null)
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     @PutMapping
@@ -67,14 +70,14 @@ public class UserController {
 
     @PostMapping("/getUsersByPhones")
     @ResponseBody
-    public List<User> getUsersByPhones(@RequestBody PhoneList phoneList) {
+    public Set<User> getUsersByPhones(@RequestBody PhoneList phoneList) {
         return phoneList
                 .getPhoneList()
                 .stream()
                 .map(userService::findUserByPhoneNumberLike)
                 .flatMap(Collection::stream)
                 .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
     }
 
     @PostMapping("/createUser")
