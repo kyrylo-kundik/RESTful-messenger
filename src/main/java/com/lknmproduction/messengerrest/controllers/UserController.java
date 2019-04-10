@@ -70,14 +70,14 @@ public class UserController {
 
     @PostMapping("/getUsersByPhones")
     @ResponseBody
-    public List<User> getUsersByPhones(@RequestBody PhoneList phoneList) {
+    public Set<User> getUsersByPhones(@RequestBody PhoneList phoneList) {
         return phoneList
                 .getPhoneList()
                 .stream()
                 .map(userService::findUserByPhoneNumberLike)
                 .flatMap(Collection::stream)
                 .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
     }
 
     @PostMapping("/createUser")
