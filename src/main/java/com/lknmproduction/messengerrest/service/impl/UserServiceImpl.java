@@ -4,6 +4,7 @@ import com.lknmproduction.messengerrest.domain.Device;
 import com.lknmproduction.messengerrest.domain.User;
 import com.lknmproduction.messengerrest.repositories.UserRepository;
 import com.lknmproduction.messengerrest.service.UserService;
+import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +14,7 @@ import java.util.Optional;
 
 @Service
 @Transactional
+@CacheConfig(cacheNames = {"users"})
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
@@ -27,7 +29,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Cacheable("users")
+    @Cacheable
     public User findUserById(Long id) {
         User user = null;
         Optional<User> optional = userRepository.findById(id);
@@ -37,7 +39,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Cacheable("users")
+    @Cacheable
     public List<User> findUsers() {
         return userRepository.findAll();
     }

@@ -18,17 +18,20 @@ public class ConfirmPinCodeRedisImpl implements ConfirmPinCodeRedisService {
 
     @Override
     public DeviceConfirmRedis addDevice(DeviceConfirmRedis deviceConfirmRedis) {
+        System.out.println("add by id");
         return redisRepository.save(deviceConfirmRedis);
     }
 
     @Override
     public DeviceConfirmRedis findById(String id) {
+        System.out.println("find by id");
         Optional<DeviceConfirmRedis> optional = redisRepository.findById(id);
         return optional.orElse(null);
     }
 
     @Override
     public DeviceConfirmRedis deleteById(String id) {
+        System.out.println("delete by id");
         DeviceConfirmRedis device = this.findById(id);
         redisRepository.delete(device);
         return device;
