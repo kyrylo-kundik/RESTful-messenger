@@ -3,6 +3,7 @@ package com.lknmproduction.messengerrest.service.impl;
 import com.lknmproduction.messengerrest.domain.Device;
 import com.lknmproduction.messengerrest.repositories.DeviceRepository;
 import com.lknmproduction.messengerrest.service.DeviceService;
+import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +13,7 @@ import java.util.Optional;
 
 @Service
 @Transactional
+@CacheConfig(cacheNames = {"devices"})
 public class DeviceServiceImpl implements DeviceService {
 
     private final DeviceRepository deviceRepository;
@@ -21,7 +23,7 @@ public class DeviceServiceImpl implements DeviceService {
     }
 
     @Override
-    @Cacheable("device")
+    @Cacheable
     public Device getDeviceById(String id) {
         Optional optional = deviceRepository.findById(id);
         if (optional.isPresent())
@@ -30,7 +32,7 @@ public class DeviceServiceImpl implements DeviceService {
     }
 
     @Override
-    @Cacheable("device")
+    @Cacheable
     public List<String> getAllDevicePushId() {
         return deviceRepository.findAllPushIds();
     }

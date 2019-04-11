@@ -24,4 +24,6 @@ public class DeviceController {
         return deviceService.getAllDevicePushId();
     }
 
+
+
 }
