@@ -57,16 +57,23 @@ public class LoginController {
         }
 
         String pinCode = generatePinCode();
+        String deviceId = baseLogin.getDeviceId();
 //        StringResponsePinCode responsePinCode = new StringResponsePinCode();
 //        responsePinCode.setPinCode(pinCode);
 
 //        StringResponsePinCodeJWT responsePinCode = new StringResponsePinCodeJWT();
 //        responsePinCode.setPinCode(pinCode);
 
+        if (redisService.findById(deviceId) != null)
+            redisService.deleteById(deviceId);
+
         DeviceConfirmRedis device = new DeviceConfirmRedis();
-        device.setDeviceId(baseLogin.getDeviceId());
+
         device.setPinCode(pinCode);
+        device.setDeviceId(deviceId);
+
         redisService.addDevice(device);
+
 
         token = jwtTokenService.encodeToken(baseLogin.getPhoneNumber(), baseLogin.getDeviceId(), false, false);
         twilioService.sendMessage(baseLogin.getPhoneNumber(), "Your pin code: " + pinCode);
@@ -103,6 +110,15 @@ public class LoginController {
         User user = userService.findUserByPhoneNumber(phoneNumber);
 
         if (user != null) {
+
+            Device userDevice = new Device();
+            userDevice.setId(deviceId);
+            userDevice.setIsActive(true);
+            List<Device> devices = user.getDeviceList();
+            devices.add(userDevice);
+            user.setDeviceList(devices);
+            userService.saveUser(user);
+
             token = jwtTokenService.encodeToken(phoneNumber, deviceId, true, true);
         } else {
             token = jwtTokenService.encodeToken(phoneNumber, deviceId, true, false);
