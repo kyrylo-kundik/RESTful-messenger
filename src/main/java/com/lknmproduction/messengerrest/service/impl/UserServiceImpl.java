@@ -3,14 +3,17 @@ package com.lknmproduction.messengerrest.service.impl;
 import com.lknmproduction.messengerrest.domain.Device;
 import com.lknmproduction.messengerrest.domain.User;
 import com.lknmproduction.messengerrest.repositories.UserRepository;
+import com.lknmproduction.messengerrest.service.NotificationService;
 import com.lknmproduction.messengerrest.service.UserService;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -18,9 +21,11 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository, NotificationService notificationService) {
         this.userRepository = userRepository;
+        this.notificationService = notificationService;
     }
 
     @Override
@@ -73,5 +78,20 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> findUserByPhoneNumberLike(String phoneNumber) {
         return userRepository.findAllByPhoneNumberContains(phoneNumber);
+    }
+
+    @Override
+    public void sendNotifications(String title, String body, List<String> phoneNumbers) {
+        List<Device> deviceList = phoneNumbers
+                .stream()
+                .map(this::userDevicesByPhoneNumber)
+                .flatMap(Collection::stream)
+                .filter(Device::getIsActive)
+                .collect(Collectors.toList());
+
+        notificationService.sendNotifications(title, body, deviceList
+                .stream()
+                .map(Device::getPushId)
+                .collect(Collectors.toList()));
     }
 }

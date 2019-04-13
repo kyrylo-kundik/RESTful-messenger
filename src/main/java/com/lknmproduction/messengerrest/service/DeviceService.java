@@ -10,4 +10,8 @@ public interface DeviceService {
 
     List<String> getAllDevicePushId();
 
+    void setPushId(String deviceId, String pushId);
+
+    void setActiveness(String deviceId, boolean isActive);
+
 }
