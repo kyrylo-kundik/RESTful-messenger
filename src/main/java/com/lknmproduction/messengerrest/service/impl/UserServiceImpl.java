@@ -13,6 +13,7 @@ import javax.transaction.Transactional;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Service
@@ -81,17 +82,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void sendNotifications(String title, String body, List<String> phoneNumbers) {
+    public CompletableFuture<String> sendNotifications(String title, String body, List<String> phoneNumbers) {
         List<Device> deviceList = phoneNumbers
                 .stream()
                 .map(this::userDevicesByPhoneNumber)
                 .flatMap(Collection::stream)
                 .filter(Device::getIsActive)
                 .collect(Collectors.toList());
-
-        notificationService.sendNotifications(title, body, deviceList
-                .stream()
-                .map(Device::getPushId)
-                .collect(Collectors.toList()));
+        if (deviceList.size() > 0)
+            return notificationService.sendNotifications(title, body, deviceList
+                    .stream()
+                    .map(Device::getPushId)
+                    .collect(Collectors.toList()));
+        else
+            return null;
     }
 }

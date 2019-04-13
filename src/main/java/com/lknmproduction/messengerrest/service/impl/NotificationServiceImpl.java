@@ -31,22 +31,36 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     @Async
-    public CompletableFuture<String> sendNotifications(String title, String body, List<String> pushIds) throws IOException, JSONException {
+    public CompletableFuture<String> sendNotifications(String title, String body, List<String> pushIds) {
 
         JSONObject reqBody = new JSONObject();
-        reqBody.put("to", pushIds);
-        reqBody.put("priority", "high");
-
         JSONObject notification = new JSONObject();
-        notification.put("title", "JSA Notification");
-        notification.put("body", "Happy Message!");
-
         JSONObject data = new JSONObject();
-        data.put("Key-1", "JSA Data 1");
-        data.put("Key-2", "JSA Data 2");
 
-        reqBody.put("notification", notification);
-        reqBody.put("data", data);
+
+        try {
+
+            if (pushIds.size() > 1)
+                reqBody.put("registration_ids", pushIds);
+            else if (pushIds.size() == 1)
+                reqBody.put("to", pushIds.get(0));
+            notification.put("title", title);
+            notification.put("body", body);
+            notification.put("priority", "high");
+            notification.put("content_available", true);
+            notification.put("sound", "default");
+
+            data.put("title", title);
+            data.put("body", body);
+            data.put("priority", "high");
+            data.put("content_available", true);
+
+            reqBody.put("notification", notification);
+            reqBody.put("data", data);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         HttpEntity<String> request = new HttpEntity<>(reqBody.toString());
 
@@ -70,7 +84,7 @@ class HeaderRequestInterceptor implements ClientHttpRequestInterceptor {
     private final String headerName;
     private final String headerValue;
 
-    public HeaderRequestInterceptor(String headerName, String headerValue) {
+    HeaderRequestInterceptor(String headerName, String headerValue) {
         this.headerName = headerName;
         this.headerValue = headerValue;
     }
