@@ -10,8 +10,6 @@ import java.util.Date;
 import java.util.List;
 
 @Data
-@EqualsAndHashCode(exclude = "deviceList")
-@ToString(exclude = "deviceList")
 @Entity
 @Table(name = "users")
 public class User {
@@ -40,6 +38,18 @@ public class User {
             inverseJoinColumns = {@JoinColumn(name = "device_id")}
     )
     @JsonIgnore
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private List<Device> deviceList;
+
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinTable(name = "user_to_chat",
+            joinColumns = {@JoinColumn(name = "user_id")},
+            inverseJoinColumns = {@JoinColumn(name = "chat_id")}
+    )
+    @JsonIgnore
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private List<Chat> chatList;
 
 }

@@ -2,13 +2,11 @@ package com.lknmproduction.messengerrest.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
 import java.util.List;
 
 @Data
-@EqualsAndHashCode(exclude = "user")
 @Entity
 @Table
 public class Device {
