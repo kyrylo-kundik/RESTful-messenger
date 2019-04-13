@@ -1,13 +1,14 @@
-package com.lknmproduction.messengerrest.controllers;
+package com.lknmproduction.messengerrest.controllers.utils;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.lknmproduction.messengerrest.domain.Device;
 import com.lknmproduction.messengerrest.domain.User;
 import com.lknmproduction.messengerrest.domain.redis.DeviceConfirmRedis;
-import com.lknmproduction.messengerrest.domain.utils.PhoneDeviceBaseLogin;
-import com.lknmproduction.messengerrest.domain.utils.StringResponsePinCode;
-import com.lknmproduction.messengerrest.domain.utils.StringResponseToken;
-import com.lknmproduction.messengerrest.service.ConfirmPinCodeRedisService;
+import com.lknmproduction.messengerrest.domain.utils.requests.PhoneDeviceBaseLogin;
+import com.lknmproduction.messengerrest.domain.utils.responses.StringResponsePinCode;
+import com.lknmproduction.messengerrest.domain.utils.responses.StringResponseToken;
+import com.lknmproduction.messengerrest.service.DeviceService;
+import com.lknmproduction.messengerrest.service.redis.ConfirmPinCodeRedisService;
 import com.lknmproduction.messengerrest.service.UserService;
 import com.lknmproduction.messengerrest.service.utils.JwtTokenService;
 import com.lknmproduction.messengerrest.service.utils.twilio.TwilioService;
@@ -29,14 +30,16 @@ public class LoginController {
     public static final String BASE_URL = "/api/v1/users";
 
     private final UserService userService;
+    private final DeviceService deviceService;
     private final ConfirmPinCodeRedisService redisService;
     private final JwtTokenService jwtTokenService;
     private final TwilioService twilioService;
     private final HttpServletRequest req;
     private static final Random RANDOM = new Random(System.nanoTime());
 
-    public LoginController(UserService userService, ConfirmPinCodeRedisService redisService, JwtTokenService jwtTokenService, TwilioService twilioService, HttpServletRequest req) {
+    public LoginController(UserService userService, DeviceService deviceService, ConfirmPinCodeRedisService redisService, JwtTokenService jwtTokenService, TwilioService twilioService, HttpServletRequest req) {
         this.userService = userService;
+        this.deviceService = deviceService;
         this.redisService = redisService;
         this.jwtTokenService = jwtTokenService;
         this.twilioService = twilioService;
@@ -72,6 +75,7 @@ public class LoginController {
         device.setPinCode(pinCode);
         device.setDeviceId(deviceId);
 
+        redisService.printTest("Hello! Please pabotai");
         redisService.addDevice(device);
 
 
@@ -111,13 +115,21 @@ public class LoginController {
 
         if (user != null) {
 
-            Device userDevice = new Device();
-            userDevice.setId(deviceId);
-            userDevice.setIsActive(true);
-            List<Device> devices = user.getDeviceList();
-            devices.add(userDevice);
-            user.setDeviceList(devices);
-            userService.saveUser(user);
+            List<Device> deviceList = user.getDeviceList();
+
+            boolean wasSet = deviceList.stream().anyMatch(device1 -> device1.getId().equals(deviceId));
+
+            if (!wasSet) {
+                Device userDevice = new Device();
+                userDevice.setId(deviceId);
+                userDevice.setIsActive(true);
+                List<Device> devices = user.getDeviceList();
+                devices.add(userDevice);
+                user.setDeviceList(devices);
+                userService.saveUser(user);
+            } else {
+                deviceService.setActiveness(deviceId, true);
+            }
 
             token = jwtTokenService.encodeToken(phoneNumber, deviceId, true, true);
         } else {
@@ -139,7 +151,6 @@ public class LoginController {
 
         DecodedJWT jwt = jwtTokenService.decodeToken(token);
 
-        //TODO rethink this
 //        if (jwt.getClaim("isActive").asBoolean())
 //            return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
 

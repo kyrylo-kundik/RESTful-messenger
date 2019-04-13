@@ -3,10 +3,11 @@ package com.lknmproduction.messengerrest.controllers;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.lknmproduction.messengerrest.domain.Device;
 import com.lknmproduction.messengerrest.domain.User;
-import com.lknmproduction.messengerrest.domain.utils.EditingUser;
-import com.lknmproduction.messengerrest.domain.utils.PhoneList;
-import com.lknmproduction.messengerrest.domain.utils.StringResponseChatToken;
-import com.lknmproduction.messengerrest.domain.utils.StringResponseToken;
+import com.lknmproduction.messengerrest.domain.utils.requests.EditingUser;
+import com.lknmproduction.messengerrest.domain.utils.requests.PhoneList;
+import com.lknmproduction.messengerrest.domain.utils.responses.StringResponseChatToken;
+import com.lknmproduction.messengerrest.domain.utils.responses.StringResponseToken;
+import com.lknmproduction.messengerrest.service.DeviceService;
 import com.lknmproduction.messengerrest.service.utils.JwtTokenService;
 import com.lknmproduction.messengerrest.service.UserService;
 import com.lknmproduction.messengerrest.service.utils.twilio.TwilioService;
@@ -25,11 +26,13 @@ public class UserController {
 
     public static final String BASE_URL = "/api/v1/user";
     private final UserService userService;
+    private final DeviceService deviceService;
     private final JwtTokenService jwtTokenService;
     private final TwilioService twilioService;
 
-    public UserController(UserService userService, JwtTokenService jwtTokenService, TwilioService twilioService) {
+    public UserController(UserService userService, DeviceService deviceService, JwtTokenService jwtTokenService, TwilioService twilioService) {
         this.userService = userService;
+        this.deviceService = deviceService;
         this.jwtTokenService = jwtTokenService;
         this.twilioService = twilioService;
     }
@@ -116,6 +119,20 @@ public class UserController {
         StringResponseChatToken token = new StringResponseChatToken();
         token.setChatToken(twilioService.getChatToken(jwtTokenService.decodeToken(jwtTokenUser).getClaim("phoneNumber").asString()));
         return token;
+    }
+
+    @GetMapping("/logout")
+    @ResponseBody
+    public StringResponseToken userLogout(@RequestHeader(HEADER_STRING) String token) {
+        DecodedJWT decodedJWT = jwtTokenService.decodeToken(token);
+
+        String deviceId = decodedJWT.getClaim("deviceId").asString();
+
+        deviceService.setActiveness(deviceId, false);
+
+        StringResponseToken responseToken = new StringResponseToken();
+        responseToken.setToken(jwtTokenService.encodeToken(decodedJWT.getClaim("phoneNumber").asString(), deviceId, false, true));
+        return responseToken;
     }
 
 }
