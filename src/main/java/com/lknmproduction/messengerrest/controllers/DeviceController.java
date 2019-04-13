@@ -1,6 +1,7 @@
 package com.lknmproduction.messengerrest.controllers;
 
 import com.lknmproduction.messengerrest.domain.utils.requests.DevicePushId;
+import com.lknmproduction.messengerrest.domain.utils.requests.PhoneList;
 import com.lknmproduction.messengerrest.domain.utils.requests.SendNotifBody;
 import com.lknmproduction.messengerrest.service.DeviceService;
 import com.lknmproduction.messengerrest.service.UserService;
@@ -9,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -62,6 +64,13 @@ public class DeviceController {
 
         return new ResponseEntity<>("Push Notification ERROR!", HttpStatus.BAD_REQUEST);
 
+    }
+
+    @PostMapping("/getActivePushIds")
+    @ResponseBody
+    @ResponseStatus(HttpStatus.OK)
+    public List<String> getActivePushIds(@RequestBody PhoneList phoneList) {
+        return userService.getPushIdsByPhoneNumbers(phoneList.getPhoneList());
     }
 
 }

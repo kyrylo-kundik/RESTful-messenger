@@ -3,12 +3,17 @@ package com.lknmproduction.messengerrest.service.impl;
 import com.lknmproduction.messengerrest.domain.Message;
 import com.lknmproduction.messengerrest.repositories.MessageRepository;
 import com.lknmproduction.messengerrest.service.MessageService;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@Transactional
+@CacheConfig(cacheNames = {"messages"})
 public class MessageServiceImpl implements MessageService {
 
     private final MessageRepository messageRepository;
@@ -28,6 +33,7 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
+    @Cacheable
     public Message findById(Long id) {
         Optional optional = messageRepository.findById(id);
 
