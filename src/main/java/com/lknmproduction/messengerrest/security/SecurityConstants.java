@@ -7,5 +7,6 @@ public class SecurityConstants {
     public static final String HEADER_STRING = "Authorization";
     public static final String LOGIN_URL = "/api/v1/users/login";
     public static final String CONFIRM_LOGIN_URL = "/api/v1/users/confirmLogin";
-    public static final String CREATE_USER_URL = "api/v1/users/createUser";
+    public static final String RESEND_CODE_URL = "/api/v1/users/resendCode";
+    public static final String CREATE_USER_URL = "/api/v1/user/createUser";
 }
