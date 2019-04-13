@@ -18,6 +18,9 @@ public class Message {
     @Column(name = "created_at")
     private Date createdAt;
 
+    @Column(name = "is_edited")
+    private boolean isEdited;
+
     @Column(length = 65535)
     private String text;
 
