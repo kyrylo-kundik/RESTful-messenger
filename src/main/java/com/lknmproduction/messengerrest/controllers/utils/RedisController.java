@@ -1,7 +1,7 @@
-package com.lknmproduction.messengerrest.controllers;
+package com.lknmproduction.messengerrest.controllers.utils;
 
 import com.lknmproduction.messengerrest.domain.redis.DeviceConfirmRedis;
-import com.lknmproduction.messengerrest.service.ConfirmPinCodeRedisService;
+import com.lknmproduction.messengerrest.service.redis.ConfirmPinCodeRedisService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
