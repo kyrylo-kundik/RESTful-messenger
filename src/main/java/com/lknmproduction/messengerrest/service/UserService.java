@@ -23,4 +23,6 @@ public interface UserService {
 
     public List<User> findUserByPhoneNumberLike(String phoneNumber);
 
+    void sendNotifications(String title, String body, List<String> phoneNumbers);
+
 }
