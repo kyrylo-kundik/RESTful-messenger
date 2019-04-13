@@ -1,11 +1,12 @@
 package com.lknmproduction.messengerrest.controllers;
 
+import com.lknmproduction.messengerrest.domain.utils.requests.DevicePushId;
 import com.lknmproduction.messengerrest.service.DeviceService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static com.lknmproduction.messengerrest.security.SecurityConstants.HEADER_STRING;
 
 @RestController
 @RequestMapping(DeviceController.BASE_URL)
@@ -24,6 +25,9 @@ public class DeviceController {
         return deviceService.getAllDevicePushId();
     }
 
+    @PostMapping("/setPushId")
+    public void setPishId(@RequestHeader(HEADER_STRING) String token, @RequestBody DevicePushId devicePushId) {
 
+    }
 
 }
