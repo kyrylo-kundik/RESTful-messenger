@@ -1,8 +1,8 @@
-package com.lknmproduction.messengerrest.service.impl;
+package com.lknmproduction.messengerrest.service.impl.redis;
 
 import com.lknmproduction.messengerrest.domain.redis.DeviceConfirmRedis;
 import com.lknmproduction.messengerrest.repositories.redis.RedisRepository;
-import com.lknmproduction.messengerrest.service.ConfirmPinCodeRedisService;
+import com.lknmproduction.messengerrest.service.redis.ConfirmPinCodeRedisService;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -35,5 +35,10 @@ public class ConfirmPinCodeRedisImpl implements ConfirmPinCodeRedisService {
         DeviceConfirmRedis device = this.findById(id);
         redisRepository.delete(device);
         return device;
+    }
+
+    @Override
+    public void printTest(String print) {
+        System.out.println(print);
     }
 }
