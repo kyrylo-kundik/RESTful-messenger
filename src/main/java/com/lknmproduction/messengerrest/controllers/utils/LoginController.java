@@ -1,4 +1,4 @@
-package com.lknmproduction.messengerrest.controllers;
+package com.lknmproduction.messengerrest.controllers.utils;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.lknmproduction.messengerrest.domain.Device;
@@ -7,7 +7,7 @@ import com.lknmproduction.messengerrest.domain.redis.DeviceConfirmRedis;
 import com.lknmproduction.messengerrest.domain.utils.requests.PhoneDeviceBaseLogin;
 import com.lknmproduction.messengerrest.domain.utils.responses.StringResponsePinCode;
 import com.lknmproduction.messengerrest.domain.utils.responses.StringResponseToken;
-import com.lknmproduction.messengerrest.service.ConfirmPinCodeRedisService;
+import com.lknmproduction.messengerrest.service.redis.ConfirmPinCodeRedisService;
 import com.lknmproduction.messengerrest.service.UserService;
 import com.lknmproduction.messengerrest.service.utils.JwtTokenService;
 import com.lknmproduction.messengerrest.service.utils.twilio.TwilioService;
@@ -72,6 +72,7 @@ public class LoginController {
         device.setPinCode(pinCode);
         device.setDeviceId(deviceId);
 
+        redisService.printTest("Hello! Please pabotai");
         redisService.addDevice(device);
 
 
@@ -139,7 +140,6 @@ public class LoginController {
 
         DecodedJWT jwt = jwtTokenService.decodeToken(token);
 
-        //TODO rethink this
 //        if (jwt.getClaim("isActive").asBoolean())
 //            return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
 

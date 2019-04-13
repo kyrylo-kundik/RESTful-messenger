@@ -1,6 +1,7 @@
 package com.lknmproduction.messengerrest.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.lknmproduction.messengerrest.domain.utils.UserChat;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -32,7 +33,9 @@ public class User {
     @Column(length = 4096)
     private String bio;
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToMany(
+            cascade = CascadeType.ALL,
+            fetch = FetchType.EAGER)
     @JoinTable(name = "user_to_device",
             joinColumns = {@JoinColumn(name = "user_id")},
             inverseJoinColumns = {@JoinColumn(name = "device_id")}
@@ -42,14 +45,13 @@ public class User {
     @ToString.Exclude
     private List<Device> deviceList;
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinTable(name = "user_to_chat",
-            joinColumns = {@JoinColumn(name = "user_id")},
-            inverseJoinColumns = {@JoinColumn(name = "chat_id")}
-    )
+    @OneToMany(
+            mappedBy = "user",
+            cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY)
     @JsonIgnore
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    private List<Chat> chatList;
+    private List<UserChat> chatList;
 
 }
