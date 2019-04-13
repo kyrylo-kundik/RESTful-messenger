@@ -36,4 +36,14 @@ public class DeviceServiceImpl implements DeviceService {
     public List<String> getAllDevicePushId() {
         return deviceRepository.findAllPushIds();
     }
+
+    @Override
+    public void setPushId(String deviceId, String pushId) {
+        deviceRepository.setPushIdToDevice(deviceId, pushId);
+    }
+
+    @Override
+    public void setActiveness(String deviceId, boolean isActive) {
+        deviceRepository.setDeviceIsActive(deviceId, isActive);
+    }
 }
