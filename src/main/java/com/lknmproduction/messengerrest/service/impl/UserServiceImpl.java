@@ -81,6 +81,7 @@ public class UserServiceImpl implements UserService {
         return userRepository.findAllByPhoneNumberContains(phoneNumber);
     }
 
+
     @Override
     public CompletableFuture<String> sendNotifications(String title, String body, List<String> phoneNumbers) {
         List<Device> deviceList = phoneNumbers
@@ -96,5 +97,20 @@ public class UserServiceImpl implements UserService {
                     .collect(Collectors.toList()));
         else
             return null;
+    }
+
+    @Override
+    @Cacheable
+    public List<String> getPushIdsByPhoneNumbers(List<String> phoneNumbers) {
+        List<Device> deviceList = phoneNumbers
+                .stream()
+                .map(this::userDevicesByPhoneNumber)
+                .flatMap(Collection::stream)
+                .filter(Device::getIsActive)
+                .collect(Collectors.toList());
+        return deviceList
+                .stream()
+                .map(Device::getPushId)
+                .collect(Collectors.toList());
     }
 }

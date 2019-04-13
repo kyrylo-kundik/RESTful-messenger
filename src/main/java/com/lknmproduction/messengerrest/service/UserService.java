@@ -26,4 +26,6 @@ public interface UserService {
 
     CompletableFuture<String> sendNotifications(String title, String body, List<String> phoneNumbers);
 
+    List<String> getPushIdsByPhoneNumbers(List<String> phoneNumbers);
+
 }

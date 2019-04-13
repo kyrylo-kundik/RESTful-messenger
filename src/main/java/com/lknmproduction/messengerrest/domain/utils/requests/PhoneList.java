@@ -2,9 +2,9 @@ package com.lknmproduction.messengerrest.domain.utils.requests;
 
 import lombok.Data;
 
-import java.util.ArrayList;
+import java.util.List;
 
 @Data
 public class PhoneList {
-    private ArrayList<String> phoneList;
+    private List<String> phoneList;
 }
