@@ -3,12 +3,17 @@ package com.lknmproduction.messengerrest.service.impl;
 import com.lknmproduction.messengerrest.domain.Chat;
 import com.lknmproduction.messengerrest.repositories.ChatRepository;
 import com.lknmproduction.messengerrest.service.ChatService;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@CacheConfig(cacheNames = {"chats"})
+@Transactional
 public class ChatServiceImpl implements ChatService {
 
     private final ChatRepository chatRepository;
@@ -38,6 +43,7 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
+    @Cacheable
     public Chat findChat(Long id) {
 
         Optional optional = chatRepository.findById(id);
@@ -49,6 +55,7 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
+    @Cacheable
     public List<Chat> getChats() {
         return chatRepository.findAll();
     }

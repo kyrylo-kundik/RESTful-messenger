@@ -4,6 +4,7 @@ import com.lknmproduction.messengerrest.domain.Device;
 import com.lknmproduction.messengerrest.domain.User;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public interface UserService {
 
@@ -23,6 +24,8 @@ public interface UserService {
 
     public List<User> findUserByPhoneNumberLike(String phoneNumber);
 
-    void sendNotifications(String title, String body, List<String> phoneNumbers);
+    CompletableFuture<String> sendNotifications(String title, String body, String payload, List<String> phoneNumbers);
+
+    List<String> getPushIdsByPhoneNumbers(List<String> phoneNumbers);
 
 }
