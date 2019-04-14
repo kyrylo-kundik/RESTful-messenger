@@ -83,7 +83,7 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public CompletableFuture<String> sendNotifications(String title, String body, List<String> phoneNumbers) {
+    public CompletableFuture<String> sendNotifications(String title, String body, String payload, List<String> phoneNumbers) {
         List<Device> deviceList = phoneNumbers
                 .stream()
                 .map(this::userDevicesByPhoneNumber)
@@ -91,7 +91,7 @@ public class UserServiceImpl implements UserService {
                 .filter(Device::getIsActive)
                 .collect(Collectors.toList());
         if (deviceList.size() > 0)
-            return notificationService.sendNotifications(title, body, deviceList
+            return notificationService.sendNotifications(title, body, payload, deviceList
                     .stream()
                     .map(Device::getPushId)
                     .collect(Collectors.toList()));
