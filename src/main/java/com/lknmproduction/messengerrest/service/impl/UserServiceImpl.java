@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -87,6 +88,7 @@ public class UserServiceImpl implements UserService {
         List<Device> deviceList = phoneNumbers
                 .stream()
                 .map(this::userDevicesByPhoneNumber)
+                .filter(Objects::nonNull)
                 .flatMap(Collection::stream)
                 .filter(Device::getIsActive)
                 .collect(Collectors.toList());
