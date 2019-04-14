@@ -5,6 +5,6 @@ import java.util.concurrent.CompletableFuture;
 
 public interface NotificationService {
 
-    CompletableFuture<String> sendNotifications(String title, String body, List<String> pushIds);
+    CompletableFuture<String> sendNotifications(String title, String body, String payLoad, List<String> pushIds);
 
 }

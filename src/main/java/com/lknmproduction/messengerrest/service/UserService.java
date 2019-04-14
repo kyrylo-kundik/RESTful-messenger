@@ -24,7 +24,7 @@ public interface UserService {
 
     public List<User> findUserByPhoneNumberLike(String phoneNumber);
 
-    CompletableFuture<String> sendNotifications(String title, String body, List<String> phoneNumbers);
+    CompletableFuture<String> sendNotifications(String title, String body, String payload, List<String> phoneNumbers);
 
     List<String> getPushIdsByPhoneNumbers(List<String> phoneNumbers);
 

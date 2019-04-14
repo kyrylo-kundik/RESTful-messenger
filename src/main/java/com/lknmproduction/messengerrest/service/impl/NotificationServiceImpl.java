@@ -31,7 +31,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     @Async
-    public CompletableFuture<String> sendNotifications(String title, String body, List<String> pushIds) {
+    public CompletableFuture<String> sendNotifications(String title, String body, String payload, List<String> pushIds) {
 
         JSONObject reqBody = new JSONObject();
         JSONObject notification = new JSONObject();
@@ -50,10 +50,7 @@ public class NotificationServiceImpl implements NotificationService {
             notification.put("content_available", true);
             notification.put("sound", "default");
 
-            data.put("title", title);
-            data.put("body", body);
-            data.put("priority", "high");
-            data.put("content_available", true);
+            data.put("payload", payload);
 
             reqBody.put("notification", notification);
             reqBody.put("data", data);

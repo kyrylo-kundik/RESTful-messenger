@@ -49,7 +49,8 @@ public class DeviceController {
     @ResponseBody
     public ResponseEntity<?> sendNotifications(@RequestBody SendNotifBody notifBody) {
 
-        CompletableFuture<String> pushNotification = userService.sendNotifications(notifBody.getTitle(), notifBody.getBody(), notifBody.getPhoneList());
+        CompletableFuture<String> pushNotification = userService.sendNotifications(notifBody.getTitle(),
+                notifBody.getBody(), notifBody.getPayload(), notifBody.getPhoneList());
 
         if (pushNotification == null)
             return new ResponseEntity<>("Push ids array length is 0", HttpStatus.BAD_REQUEST);

@@ -9,4 +9,5 @@ public class SendNotifBody {
     private String title;
     private String body;
     private List<String> phoneList;
+    private String payload;
 }
