@@ -12,7 +12,9 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Service
@@ -80,18 +82,37 @@ public class UserServiceImpl implements UserService {
         return userRepository.findAllByPhoneNumberContains(phoneNumber);
     }
 
+
     @Override
-    public void sendNotifications(String title, String body, List<String> phoneNumbers) {
+    public CompletableFuture<String> sendNotifications(String title, String body, String payload, List<String> phoneNumbers) {
+        List<Device> deviceList = phoneNumbers
+                .stream()
+                .map(this::userDevicesByPhoneNumber)
+                .filter(Objects::nonNull)
+                .flatMap(Collection::stream)
+                .filter(Device::getIsActive)
+                .collect(Collectors.toList());
+        if (deviceList.size() > 0)
+            return notificationService.sendNotifications(title, body, payload, deviceList
+                    .stream()
+                    .map(Device::getPushId)
+                    .collect(Collectors.toList()));
+        else
+            return null;
+    }
+
+    @Override
+    @Cacheable
+    public List<String> getPushIdsByPhoneNumbers(List<String> phoneNumbers) {
         List<Device> deviceList = phoneNumbers
                 .stream()
                 .map(this::userDevicesByPhoneNumber)
                 .flatMap(Collection::stream)
                 .filter(Device::getIsActive)
                 .collect(Collectors.toList());
-
-        notificationService.sendNotifications(title, body, deviceList
+        return deviceList
                 .stream()
                 .map(Device::getPushId)
-                .collect(Collectors.toList()));
+                .collect(Collectors.toList());
     }
 }
