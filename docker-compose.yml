@@ -1,11 +1,14 @@
 version: '3'
 services:
+
   postgres:
     image: postgres:9.6
     environment:
       POSTGRES_PASSWORD: karpovich
       POSTGRES_USER: postgres
       POSTGRES_DB: messenger_rest
+    volumes:
+      - ./tmp/pg-db:/var/lib/postgresql/data
     ports:
       - "127.0.0.1:$PG_EXT_PORT:5432"
     restart: always
@@ -20,6 +23,8 @@ services:
     restart: always
     ports:
       - "127.0.0.1:$REDIS_EXT_PORT:6379"
+    volumes:
+      - ./tmp/redis-db:/data
     healthcheck:
       test: ["CMD", "redis-cli","ping"]
       interval: 30s
@@ -34,7 +39,7 @@ services:
     working_dir: /app
     command: mvn clean spring-boot:run
     ports:
-      - "127.0.0.1:8080:8080"
+      - "127.0.0.1:$APP_PORT:8080"
     links:
       - redis
       - postgres

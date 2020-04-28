@@ -28,3 +28,6 @@ HELP.md
 src/main/resources/*
 !src/main/resources/application.properties
 .env
+
+tmp
+tmp/
