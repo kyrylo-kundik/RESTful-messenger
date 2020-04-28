@@ -17,7 +17,7 @@ public class Device {
     private String pushId;
     @Column(name = "is_active")
     private Boolean isActive;
-    @ManyToMany(mappedBy = "deviceList", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(mappedBy = "deviceList", fetch = FetchType.LAZY)
     @JsonIgnore
     private List<User> user;
 
