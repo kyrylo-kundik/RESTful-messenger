@@ -31,8 +31,8 @@ public class TwilioServiceImpl implements TwilioService {
                 new com.twilio.type.PhoneNumber(twilioCredentialService.getMessagingService()),
                 body)
                 .create();
-        System.out.println("Message Sid:");
-        System.out.println(message.getSid());
+//        System.out.println("Message Sid:");
+//        System.out.println(message.getSid());
     }
 
     @Override
