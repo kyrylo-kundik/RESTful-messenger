@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -22,13 +21,11 @@ public class DeviceServiceImpl implements DeviceService {
         this.deviceRepository = deviceRepository;
     }
 
+
     @Override
     @Cacheable
     public Device getDeviceById(String id) {
-        Optional optional = deviceRepository.findById(id);
-        if (optional.isPresent())
-            return (Device) optional.get();
-        return null;
+        return deviceRepository.findById(id).orElse(null);
     }
 
     @Override
@@ -45,5 +42,15 @@ public class DeviceServiceImpl implements DeviceService {
     @Override
     public void setActiveness(String deviceId, boolean isActive) {
         deviceRepository.setDeviceIsActive(deviceId, isActive);
+    }
+
+    @Override
+    public List<Device> getAllDevices() {
+        return deviceRepository.findAll();
+    }
+
+    @Override
+    public void deleteDevice(String deviceId) {
+        deviceRepository.deleteById(deviceId);
     }
 }
