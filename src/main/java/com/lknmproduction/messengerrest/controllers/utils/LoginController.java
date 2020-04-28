@@ -75,7 +75,6 @@ public class LoginController {
         device.setPinCode(pinCode);
         device.setDeviceId(deviceId);
 
-        redisService.printTest("Hello! Please pabotai");
         redisService.addDevice(device);
 
 
