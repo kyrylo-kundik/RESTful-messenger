@@ -116,7 +116,7 @@ public class LoginController {
 
             List<Device> deviceList = user.getDeviceList();
 
-            boolean wasSet = deviceList.stream().anyMatch(device1 -> device1.getId().equals(deviceId));
+            boolean wasSet = deviceList.stream().anyMatch(d -> d.getId().equals(deviceId));
 
             if (!wasSet) {
                 Device userDevice = new Device();

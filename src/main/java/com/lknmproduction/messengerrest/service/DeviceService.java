@@ -14,4 +14,8 @@ public interface DeviceService {
 
     void setActiveness(String deviceId, boolean isActive);
 
+    List<Device> getAllDevices();
+
+    void deleteDevice(String deviceId);
+
 }

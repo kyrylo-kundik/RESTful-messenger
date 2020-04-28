@@ -96,6 +96,11 @@ public class UserController {
         String deviceId = decodedJWT.getClaim("deviceId").asString();
 
         user.setPhoneNumber(phoneNumber);
+        boolean present = deviceService.getAllDevices().stream().anyMatch(d -> d.getId().equals(deviceId));
+
+        if (present) {
+            deviceService.deleteDevice(deviceId);
+        }
 
         Device device = new Device();
         device.setIsActive(true);
