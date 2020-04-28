@@ -176,7 +176,7 @@ public class LoginController {
     }
 
     private String generatePinCode() {
-        return String.format("%06d", RANDOM.nextInt(1000000));
+        return "123456";
     }
 
 }
