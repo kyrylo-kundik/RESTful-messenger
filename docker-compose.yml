@@ -7,7 +7,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_DB: messenger_rest
     ports:
-      - "127.0.0.1:5432:5432"
+      - "127.0.0.1:$PG_EXT_PORT:5432"
     restart: always
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
@@ -19,7 +19,7 @@ services:
     image: redis:latest
     restart: always
     ports:
-      - "127.0.0.1:6379:6379"
+      - "127.0.0.1:$REDIS_EXT_PORT:6379"
     healthcheck:
       test: ["CMD", "redis-cli","ping"]
       interval: 30s

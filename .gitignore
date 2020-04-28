@@ -24,3 +24,6 @@ HELP.md
 /nbdist/
 /.nb-gradle/
 /build/
+
+src/main/resources/twillioCredentials/env.properties
+.env
